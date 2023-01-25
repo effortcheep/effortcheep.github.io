@@ -16,5 +16,5 @@ jobs:
         uses: theme-keep/hexo-deploy-github-pages-action@master
         env:
           PERSONAL_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          PUBLISH_REPOSITORY: effortcheep/effortcheep.github.io.git
+          PUBLISH_REPOSITORY: effortcheep/effortcheep.github.io
           BRANCH: master
