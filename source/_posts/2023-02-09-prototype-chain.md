@@ -22,9 +22,9 @@ tags:
 
 ## 如何模拟 new 的创建
 
-1. 创建一个新的、空的实力对象 obj
+1. 创建一个新的、空的实例对象 obj
 
-2. 将 obj.\_\_proto\_\_ 指向构造函数的 prototype 链接
+2. 将 obj.\_\_proto\_\_ 指向构造函数的 prototype
 
 3. 将构造函数内部的 this，修改为实例
 
