@@ -12,6 +12,39 @@ tags:
 
 渲染层的界面使用了WebView 进行渲染；逻辑层采用 JsCore 线程运行 JS 脚本。一个小程序存在多个界面，所以渲染层存在多个 WebView 线程，这两个线程的通信会经由微信客户端做中转，逻辑层发送网络请求也经由 Native 转发
 
+为什么不采用 Web Worker 的方式 主要是性能问题  Web Worker 通信方式 要比 Native 转发更加 耗费性能
+
+另一个 shadow Dom 兼容性很差
+
+小程序 事件驱动的通信方式
+
+渲染成与逻辑层并不是直接传递数据和事件的，而是由 Native 作为中间媒介进行转发
+
+UI -> event -> jscore -> tranform data(逻辑、接口调用、数据请求) -> setData(render) -> UI
+
+setData 主要做了两件事
+
++ 改变逻辑层中目标属性的值
+
++ 通过微信客户端(Native)通知到渲染层将 目标属性的值 更新到视图
+
+往下延伸
+
+也就是 不在 UI 层展示的数据 完全可以不用 setData 方法去更新值
+
+减少多次 setData 调用
+
+
+[具体查看](https://developers.weixin.qq.com/miniprogram/dev/framework/MINA.html)
+
+[具体查看](https://developers.weixin.qq.com/miniprogram/dev/framework/quickstart/framework.html#%E6%B8%B2%E6%9F%93%E5%B1%82%E5%92%8C%E9%80%BB%E8%BE%91%E5%B1%82)
+
+
+## 小程序用户认证体系 OAuth2.0
+
+[OAuth2.0](https://zhuanlan.zhihu.com/p/509212673)
+
+
 ## 小程序优化
 
 ###
