@@ -39,7 +39,6 @@ setData 主要做了两件事
 
 [具体查看](https://developers.weixin.qq.com/miniprogram/dev/framework/quickstart/framework.html#%E6%B8%B2%E6%9F%93%E5%B1%82%E5%92%8C%E9%80%BB%E8%BE%91%E5%B1%82)
 
-
 ## 小程序用户认证体系 OAuth2.0
 
 [OAuth2.0](https://zhuanlan.zhihu.com/p/509212673)
@@ -121,3 +120,7 @@ getAPP 函数用来获取到小程序全局唯一的 App 实例
 可以用于页面传递参数
 
 不要在定义于 App() 内的函数中，或调用 App 前调用 getApp() ，使用 this 就可以拿到 app 实例。
+
+
+
+![](/image/miniprogram.png)
