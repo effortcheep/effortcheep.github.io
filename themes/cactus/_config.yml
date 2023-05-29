@@ -19,7 +19,7 @@ nav:
   articles: /archives
   # weekly: /weekly
   tags: /tags
-  search: /search
+  # search: /search
 
 # Links to your social media accounts.
 # The keys should correspond to Fontawesome icon names

@@ -4,9 +4,10 @@ nav:
   articles: 归档
   projects: 项目
   tag: 标签
+  tags: 标签
   category: 分类
   search: 搜索
-  
+
 icons:
   menu: 目录
   top: 顶部
@@ -44,7 +45,7 @@ tag_cloud:
 
 pagination:
   page: 第 %d 页，共 %d 页
- 
+
 counter:
   tag_cloud:
     zero: 没有标签
