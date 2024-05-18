@@ -17,7 +17,7 @@ tags:
 **[router路由问题](https://github.com/expo/expo/issues/28898)**
 
 ```sh
-npx create-expo-app AwesomeProject
+npx create-expo-app@latest --template
 
 ## 要在网络上运行该项目，我们需要安装以下依赖，这将有助于在网络上运行该项目：
 npx expo install react-dom react-native-web @expo/metro-runtime
