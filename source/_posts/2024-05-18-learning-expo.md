@@ -59,4 +59,40 @@ pnpx expo prebuild --platform ios/android
 eas build:configure
 ```
 
+本地 build
+
+```bash
+# 注意 Gradle 和 JDK 版本兼容
+# expo 53  gradle 8.13  jdk 17.0
+# pnpx expo run:android 此命令会报错 https://github.com/expo/expo/issues/28703
+npx expo run:android
+
+# 生成环境 打包流程 https://docs.expo.dev/guides/local-app-production/
+
+cd android
+## 打包 aab
+./gradlew app:bundleRelease
+## 打包 apk
+./gradlew app:assembleRelease
+```
+
+减小包体积 在 android/app/build.gradle 文件中
+
+```groovy
+android {
+  ...
+  defaultConfig {
+    ...
+  }
+  splits {
+    abi {
+      reset()
+      enable true
+      universalApk false  // 不生成通用APK
+      include "arm64-v8a"  // 只打包这两种架构
+    }
+  }
+  ...
+}
+```
 
