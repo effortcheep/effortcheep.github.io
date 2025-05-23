@@ -96,3 +96,38 @@ android {
 }
 ```
 
+
+### [关于热更](https://docs.expo.dev/eas-update/getting-started/#publish-an-update)
+
+[自建热更平台](https://github.com/expo/custom-expo-updates-server)
+
+```xml
+<!-- EXPO_UPDATE_URL 值应包含项目的 ID -->
+<meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://u.expo.dev/your-project-id"/>
+<meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="@string/expo_runtime_version"/>
+<meta-data android:name="expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY" android:value="{'expo-channel-name':'your-channel-name'}"/>
+```
+
+修改 app.json
+
+```json
+{
+  "expo": {
+    ...
+    "updates": {
+      ...
+      "requestHeaders": {
+        "expo-channel-name": "your-channel-name"
+      }
+      ...
+    }
+    ...
+  }
+}
+```
+
+
+```bash
+# 热更
+eas update --channel [channel-name] --message "[message]"
+```
