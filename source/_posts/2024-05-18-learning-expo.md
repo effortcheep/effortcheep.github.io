@@ -35,3 +35,28 @@ npx expo install react-dom react-native-web @expo/metro-runtime
 ## UI 库
 
 [gluestack](https://gluestack.io/)
+
+
+## expo-router
+
+可以使用默认的文件系统路由方式
+
+[也可以是用旧的版本](https://github.com/craftzdog/react-native-animated-todo)
+
+
+## 初始化项目流程
+
+创建项目
+```bash
+pnpm create expo-app
+
+# 需要 原生包
+# https://docs.expo.dev/workflow/continuous-native-generation/
+pnpx expo prebuild --platform ios/android
+
+# 构建 eas build 生成 eas.json 文件
+# https://docs.expo.dev/build/setup/
+eas build:configure
+```
+
+
