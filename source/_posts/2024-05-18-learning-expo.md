@@ -59,7 +59,17 @@ pnpx expo prebuild --platform ios/android
 eas build:configure
 ```
 
++ ​​Expo Go 的限制​​
+  + Expo Go 是一个通用客户端，仅支持纯 JavaScript 项目（即未添加原生模块或自定义配置的 Expo 项目）。
+  + 如果你通过 eas build 生成了本地原生二进制文件（如 .apk 或 .ipa），或使用了 expo prebuild 生成了原生代码（如 android/ 和 ios/ 目录），项目就脱离了 Expo Go 的兼容范围。
+
 本地 build
+
++ 使用开发客户端（Development Build）​​
+  + 通过 expo run:android 或 expo run:ios 在设备上安装一个​​自定义的开发客户端​​（包含你的原生代码）。
+  + 调试方式：
+    + 运行 expo start 启动开发服务器。
+    + 在开发客户端中手动输入开发服务器 URL（如 exp://192.168.x.x:8081），或通过 QR 码（需配合 expo start --dev-client）。
 
 ```bash
 # 注意 Gradle 和 JDK 版本兼容
