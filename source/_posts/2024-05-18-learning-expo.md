@@ -48,11 +48,12 @@ npx expo install react-dom react-native-web @expo/metro-runtime
 
 创建项目
 ```bash
-pnpm create expo-app
+# 写在最前面 请最好使用 npm
+npm create expo-app
 
 # 需要 原生包
 # https://docs.expo.dev/workflow/continuous-native-generation/
-pnpx expo prebuild --platform ios/android
+npm expo prebuild --platform ios/android
 
 # 构建 eas build 生成 eas.json 文件
 # https://docs.expo.dev/build/setup/
@@ -74,7 +75,7 @@ eas build:configure
 ```bash
 # 注意 Gradle 和 JDK 版本兼容
 # expo 53  gradle 8.13  jdk 17.0
-# pnpx expo run:android 此命令会报错 https://github.com/expo/expo/issues/28703
+# npx expo run:android 此命令会报错 https://github.com/expo/expo/issues/28703
 npx expo run:android
 
 # 生成环境 打包流程 https://docs.expo.dev/guides/local-app-production/
