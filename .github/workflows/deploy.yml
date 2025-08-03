@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@master
 
       - name: Build and Deploy
-        uses: theme-keep/hexo-deploy-github-pages-action@master
+        uses: effortcheep/hexo-deploy-github-pages-action@master
         env:
           PERSONAL_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           PUBLISH_REPOSITORY: effortcheep/effortcheep.github.io
