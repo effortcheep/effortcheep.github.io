@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="对称密码对称密码中，加密用的密钥和解密用的密钥是相同的  DES 是一种将64bit明文加密成64bit密文的对称密码算法，密钥长度是56bit规格上来说，密钥长度是64bit，但每隔7bit回设置一个用于错误检查的bit，因此密钥长度实质上是56bit 由于DES每次只能加密64bit的数据，遇到比较大的数据，需要对DES加密进行迭代(反复加密) 目前已经可以在短时间内破解，不建议使用 3DES">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS签名">
+<meta property="og:url" content="http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html">
+<meta property="og:site_name" content="EFFORT × Blog">
+<meta property="og:description" content="对称密码对称密码中，加密用的密钥和解密用的密钥是相同的  DES 是一种将64bit明文加密成64bit密文的对称密码算法，密钥长度是56bit规格上来说，密钥长度是64bit，但每隔7bit回设置一个用于错误检查的bit，因此密钥长度实质上是56bit 由于DES每次只能加密64bit的数据，遇到比较大的数据，需要对DES加密进行迭代(反复加密) 目前已经可以在短时间内破解，不建议使用 3DES">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-09-07T13:30:00.000Z">
+<meta property="article:modified_time" content="2025-11-07T00:50:08.000Z">
+<meta property="article:author" content="EFFORT">
+<meta property="article:tag" content="iOS">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>iOS签名</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <script>localStorage.getItem("dark_mode")==="dark"&&document.write(`<link rel="stylesheet" href="${location.origin}/css/dark.css">`)</script
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="EFFORT × Blog" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/post/Block.html"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/post/%E5%B0%8F%E6%8A%80%E5%B7%A7.html"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&text=iOS签名"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&title=iOS签名"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&is_video=false&description=iOS签名"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=iOS签名&body=Check out this article: http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&title=iOS签名"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&title=iOS签名"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&title=iOS签名"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&title=iOS签名"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&name=iOS签名&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&t=iOS签名"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E7%A7%B0%E5%AF%86%E7%A0%81"><span class="toc-number">1.</span> <span class="toc-text">对称密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E9%85%8D%E9%80%81%E9%97%AE%E9%A2%98"><span class="toc-number">2.</span> <span class="toc-text">密钥配送问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AC%E9%92%A5%E5%AF%86%E7%A0%81-%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%AF%86%E7%A0%81"><span class="toc-number">3.</span> <span class="toc-text">公钥密码(非对称密码)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%AF%86%E9%92%A5%E9%85%8D%E9%80%81%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">4.</span> <span class="toc-text">解决密钥配送的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E5%AF%86%E7%A0%81%E7%B3%BB%E7%BB%9F"><span class="toc-number">5.</span> <span class="toc-text">混合密码系统</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E5%AF%86%E7%A0%81-%E5%8A%A0%E5%AF%86"><span class="toc-number">5.1.</span> <span class="toc-text">混合密码-加密</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E5%AF%86%E7%A0%81-%E8%A7%A3%E5%AF%86"><span class="toc-number">5.2.</span> <span class="toc-text">混合密码-解密</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%95%E5%90%91%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0-%E5%93%88%E5%B8%8C%E5%87%BD%E6%95%B0%EF%BC%8C%E6%B6%88%E6%81%AF%E6%91%98%E8%A6%81%E5%87%BD%E6%95%B0"><span class="toc-number">6.</span> <span class="toc-text">单向散列函数(哈希函数，消息摘要函数)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95%E5%90%91%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0%E7%9A%84%E5%BA%94%E7%94%A8"><span class="toc-number">6.1.</span> <span class="toc-text">单向散列函数的应用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E7%AD%BE%E5%90%8D-%E8%AF%86%E5%88%AB%E7%AF%A1%E6%94%B9%E3%80%81%E4%BC%AA%E8%A3%85%E3%80%81%E5%90%A6%E8%AE%A4"><span class="toc-number">6.2.</span> <span class="toc-text">数组签名 识别篡改、伪装、否认</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%81%E4%B9%A6-Certificate-%E8%A7%A3%E5%86%B3%E4%B8%AD%E9%97%B4%E4%BA%BA%E6%94%BB%E5%87%BB%E9%97%AE%E9%A2%98"><span class="toc-number">7.</span> <span class="toc-text">证书(Certificate) - 解决中间人攻击问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#iOS%E7%AD%BE%E5%90%8D%E6%9C%BA%E5%88%B6"><span class="toc-number">8.</span> <span class="toc-text">iOS签名机制</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        iOS签名
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">EFFORT</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2020-09-07T13:30:00.000Z" itemprop="datePublished">2020-09-07</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/iOS/" rel="tag">iOS</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="对称密码"><a href="#对称密码" class="headerlink" title="对称密码"></a>对称密码</h2><p>对称密码中，加密用的密钥和解密用的密钥是相同的</p>
+<ul>
+<li>DES 是一种将64bit明文加密成64bit密文的对称密码算法，密钥长度是56bit<br>规格上来说，密钥长度是64bit，但每隔7bit回设置一个用于错误检查的bit，因此密钥长度实质上是56bit 由于DES每次只能加密64bit的数据，遇到比较大的数据，需要对DES加密进行迭代(反复加密) 目前已经可以在短时间内破解，不建议使用</li>
+<li>3DES 将 DES重复3次所得的一种密码算法，也叫3重DES(三个不同的密钥依次 加密 -&gt; 解密 -&gt; 加密) 处理速度不高</li>
+<li>AES</li>
+</ul>
+<h2 id="密钥配送问题"><a href="#密钥配送问题" class="headerlink" title="密钥配送问题"></a>密钥配送问题</h2><ul>
+<li>事先共享密钥</li>
+<li>密钥分配中心</li>
+<li>Diffie-Hellman密钥交换</li>
+<li>公钥密码</li>
+</ul>
+<h2 id="公钥密码-非对称密码"><a href="#公钥密码-非对称密码" class="headerlink" title="公钥密码(非对称密码)"></a>公钥密码(非对称密码)</h2><p>公钥密码中，加密用的密钥和解密用的密钥是不同的</p>
+<p>公钥密码中，密钥分为<strong>加密密钥</strong>、<strong>解密密钥</strong>2种，它们并不是同一个密钥</p>
+<p>加密密钥，一般是公开的，因此该密钥成为公钥(public key)</p>
+<p>解密密钥，由消息接收这自己保管，不公开，因此也成为私钥(private key)</p>
+<p>公钥和私钥是一一对应的，是不能单独生成的，一对公钥和私钥统称为密钥对(key pair)</p>
+<p>由公钥加密的密文，必须使用与该公钥对应的私钥才能解密<br>由私钥加密的密文，必须使用与该私钥对应的公钥才能解密</p>
+<p>目前使用最发广泛的公钥密码算法是<strong>RSA</strong></p>
+<h2 id="解决密钥配送的问题"><a href="#解决密钥配送的问题" class="headerlink" title="解决密钥配送的问题"></a>解决密钥配送的问题</h2><ul>
+<li>由消息的接受者，生成一对公钥、私钥</li>
+<li>将公钥发送给消息的发送者</li>
+<li>消息的发送者使用公钥加密消息</li>
+</ul>
+<h2 id="混合密码系统"><a href="#混合密码系统" class="headerlink" title="混合密码系统"></a>混合密码系统</h2><p>将对称加密和公钥密码的优势相结合的方法<br>解决了公钥密码速度慢的问题<br>通过公钥密码解决了对称密码的密钥配送问题</p>
+<p>网络上的密码通信所使用的<strong>SSL</strong>&#x2F;<strong>TLS</strong>都是运用了混合密码系统</p>
+<h3 id="混合密码-加密"><a href="#混合密码-加密" class="headerlink" title="混合密码-加密"></a>混合密码-加密</h3><p>会话密钥(session key)</p>
+<ul>
+<li>本次通信随机生成的临时密钥</li>
+<li>作为对称密码的密钥，用于加密消息，提高速度</li>
+</ul>
+<p>加密步骤(发送消息)</p>
+<ol>
+<li>首先，消息发送者要拥有消息接收者的公钥</li>
+<li>生成会话密钥，作为对称密码的密钥，加密消息</li>
+<li>用消息接收者的公钥，加密会话密钥</li>
+<li>将2，3步生成的加密结果，一并发给消息接收者</li>
+</ol>
+<p>发送出去的内容包括</p>
+<ol>
+<li>用会话密钥加密的消息 (加密方法：对称密码)</li>
+<li>用公钥加密的会话密钥 (加密方法：公钥密码)</li>
+</ol>
+<h3 id="混合密码-解密"><a href="#混合密码-解密" class="headerlink" title="混合密码-解密"></a>混合密码-解密</h3><ol>
+<li>接收者用私钥解密出会话密钥</li>
+<li>用会话密钥解密出消息内容</li>
+</ol>
+<h2 id="单向散列函数-哈希函数，消息摘要函数"><a href="#单向散列函数-哈希函数，消息摘要函数" class="headerlink" title="单向散列函数(哈希函数，消息摘要函数)"></a>单向散列函数(哈希函数，消息摘要函数)</h2><p>单向散列哈函数，可以根据消息内容计算出散列值<br>散列值的长度和消息长度无关，单向散列函数都会计算出固定长度的散列值<br>计算速度快<br>消息不用，散列值不同<br>具备单向性<br>常见的几种单向散列函数<br>MD4、MD5<br>SHA-1<br>SHA-2</p>
+<ul>
+<li>SHA-256、SHA-384、SHA-512</li>
+</ul>
+<h3 id="单向散列函数的应用"><a href="#单向散列函数的应用" class="headerlink" title="单向散列函数的应用"></a>单向散列函数的应用</h3><p>防止数据被篡改<br>口令加密(密码加密)</p>
+<h3 id="数组签名-识别篡改、伪装、否认"><a href="#数组签名-识别篡改、伪装、否认" class="headerlink" title="数组签名 识别篡改、伪装、否认"></a>数组签名 识别篡改、伪装、否认</h3><p>生成签名<br>由消息的发送者完成，通过 “签名密钥” 生成</p>
+<p>验证签名<br>由消息的接收者完成，通过 “验证密钥” 验证</p>
+<p>保证这个签名是消息发送者自己签的？<br>用消息发送者的私钥进行签名</p>
+<p>在数组签名中，任何人都可以使用公钥验证签名</p>
+<!-- ![](./_image/2020-09-07/截屏2020-09-07 下午4.02.12.png)![](./_image/2020-09-07/截屏2020-09-07 下午4.05.02.png) -->
+
+<p>数字签名，其实就是酱公钥密码反过来使用</p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">私钥</th>
+<th align="center">公钥</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">公钥密码</td>
+<td align="center">接收者解密时使用</td>
+<td align="center">发送者加密时使用</td>
+</tr>
+<tr>
+<td align="center">数字签名</td>
+<td align="center">签名者生成签名时使用</td>
+<td align="center">验证这验证签名时候使用</td>
+</tr>
+<tr>
+<td align="center">谁持有密钥？</td>
+<td align="center">个人持有</td>
+<td align="center">只要需要，任何人可以持有</td>
+</tr>
+</tbody></table>
+<p>数字签名的作用不是为了保密性，仅仅是为了能够识别内容有没有被篡改<br>确保数据完整性<br>识别消息是否被篡改<br>防止消息发送人否认</p>
+<h2 id="证书-Certificate-解决中间人攻击问题"><a href="#证书-Certificate-解决中间人攻击问题" class="headerlink" title="证书(Certificate) - 解决中间人攻击问题"></a>证书(Certificate) - 解决中间人攻击问题</h2><p>公钥证书(Public-key Certificate, PKC)<br>里面有个人信息，以及此人的公钥<br>认证机构(Certificate Authority, CA)施加数字签名</p>
+<!-- ![](./_image/2020-09-07/截屏2020-09-07 下午5.09.51.png) -->
+
+<h2 id="iOS签名机制"><a href="#iOS签名机制" class="headerlink" title="iOS签名机制"></a>iOS签名机制</h2><ol>
+<li>对 <strong>APP</strong> 中的 代码，资源进行签名，<strong>Mac</strong>私钥签名</li>
+<li>苹果私钥对Mac公钥签名(devices、app id、entitlements) 生成证书</li>
+<li>苹果的私钥对证书进行签名 mobileprovision<!-- ![](./_image/2020-09-07/截屏2020-09-07 下午5.52.22.png) --></li>
+</ol>
+<p> .certSigningRequest文件  Mac 公钥</p>
+<p>.cer文件 利用 Apple私钥(CA)，对 Mac 公钥生成的数字签名</p>
+<p>.mobileprovise 利用 Apple私钥(CA)，对 [.cer证书 + devices + AppID + entitlements] 进行数字签名</p>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about">关于</a></li>
+         
+          <li><a href="/archives">归档</a></li>
+         
+          <li><a href="/tags">标签</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E7%A7%B0%E5%AF%86%E7%A0%81"><span class="toc-number">1.</span> <span class="toc-text">对称密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E9%85%8D%E9%80%81%E9%97%AE%E9%A2%98"><span class="toc-number">2.</span> <span class="toc-text">密钥配送问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AC%E9%92%A5%E5%AF%86%E7%A0%81-%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%AF%86%E7%A0%81"><span class="toc-number">3.</span> <span class="toc-text">公钥密码(非对称密码)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%AF%86%E9%92%A5%E9%85%8D%E9%80%81%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">4.</span> <span class="toc-text">解决密钥配送的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E5%AF%86%E7%A0%81%E7%B3%BB%E7%BB%9F"><span class="toc-number">5.</span> <span class="toc-text">混合密码系统</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E5%AF%86%E7%A0%81-%E5%8A%A0%E5%AF%86"><span class="toc-number">5.1.</span> <span class="toc-text">混合密码-加密</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E5%AF%86%E7%A0%81-%E8%A7%A3%E5%AF%86"><span class="toc-number">5.2.</span> <span class="toc-text">混合密码-解密</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%95%E5%90%91%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0-%E5%93%88%E5%B8%8C%E5%87%BD%E6%95%B0%EF%BC%8C%E6%B6%88%E6%81%AF%E6%91%98%E8%A6%81%E5%87%BD%E6%95%B0"><span class="toc-number">6.</span> <span class="toc-text">单向散列函数(哈希函数，消息摘要函数)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95%E5%90%91%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0%E7%9A%84%E5%BA%94%E7%94%A8"><span class="toc-number">6.1.</span> <span class="toc-text">单向散列函数的应用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E7%AD%BE%E5%90%8D-%E8%AF%86%E5%88%AB%E7%AF%A1%E6%94%B9%E3%80%81%E4%BC%AA%E8%A3%85%E3%80%81%E5%90%A6%E8%AE%A4"><span class="toc-number">6.2.</span> <span class="toc-text">数组签名 识别篡改、伪装、否认</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%81%E4%B9%A6-Certificate-%E8%A7%A3%E5%86%B3%E4%B8%AD%E9%97%B4%E4%BA%BA%E6%94%BB%E5%87%BB%E9%97%AE%E9%A2%98"><span class="toc-number">7.</span> <span class="toc-text">证书(Certificate) - 解决中间人攻击问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#iOS%E7%AD%BE%E5%90%8D%E6%9C%BA%E5%88%B6"><span class="toc-number">8.</span> <span class="toc-text">iOS签名机制</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&text=iOS签名"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&title=iOS签名"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&is_video=false&description=iOS签名"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=iOS签名&body=Check out this article: http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&title=iOS签名"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&title=iOS签名"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&title=iOS签名"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&title=iOS签名"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&name=iOS签名&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/iOS%E7%AD%BE%E5%90%8D.html&t=iOS签名"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    EFFORT
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'effort-fun';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+<!-- utterances Comments -->
+
+</body>
+</html>

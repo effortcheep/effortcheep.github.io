@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="SwiftDate 使用Apple 中的Date完全独立于任何特定的地理位置，日历或区域设置，一个普通的Date对象只表示一个绝对值：实际上，它计算自 2001 年 1 月 1 日以来经过的秒数。 在开发过程中，通常需要在更具体的上下文中表示日期：世界上的特定位置，使用指定Local的规则输出他们 为了实现它，swiftDate 需要引入几个其他对象：Calendar, TimeZone, Loc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SwiftDate">
+<meta property="og:url" content="http://effort.fun/post/SwiftDate.html">
+<meta property="og:site_name" content="EFFORT × Blog">
+<meta property="og:description" content="SwiftDate 使用Apple 中的Date完全独立于任何特定的地理位置，日历或区域设置，一个普通的Date对象只表示一个绝对值：实际上，它计算自 2001 年 1 月 1 日以来经过的秒数。 在开发过程中，通常需要在更具体的上下文中表示日期：世界上的特定位置，使用指定Local的规则输出他们 为了实现它，swiftDate 需要引入几个其他对象：Calendar, TimeZone, Loc">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-11-06T21:59:22.000Z">
+<meta property="article:modified_time" content="2025-11-07T00:50:08.000Z">
+<meta property="article:author" content="EFFORT">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="swift">
+<meta property="article:tag" content="date">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>SwiftDate</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <script>localStorage.getItem("dark_mode")==="dark"&&document.write(`<link rel="stylesheet" href="${location.origin}/css/dark.css">`)</script
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="EFFORT × Blog" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/post/neovim-config.html"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/post/postgresql.html"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/SwiftDate.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/SwiftDate.html&text=SwiftDate"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/SwiftDate.html&title=SwiftDate"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/SwiftDate.html&is_video=false&description=SwiftDate"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SwiftDate&body=Check out this article: http://effort.fun/post/SwiftDate.html"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/SwiftDate.html&title=SwiftDate"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/SwiftDate.html&title=SwiftDate"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/SwiftDate.html&title=SwiftDate"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/SwiftDate.html&title=SwiftDate"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/SwiftDate.html&name=SwiftDate&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/SwiftDate.html&t=SwiftDate"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SwiftDate-%E4%BD%BF%E7%94%A8"><span class="toc-number">1.</span> <span class="toc-text">SwiftDate 使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Region-DateInRegion"><span class="toc-number">1.1.</span> <span class="toc-text">Region &amp; DateInRegion</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Default-Region"><span class="toc-number">1.1.1.</span> <span class="toc-text">The Default Region</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Create-Region"><span class="toc-number">1.1.2.</span> <span class="toc-text">Create Region</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#From-String"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">From String</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Parse-Custom-Format"><span class="toc-number">1.2.</span> <span class="toc-text">Parse Custom Format</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Date-Formatting"><span class="toc-number">1.3.</span> <span class="toc-text">Date Formatting</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        SwiftDate
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">EFFORT</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-11-06T21:59:22.000Z" itemprop="datePublished">2024-11-06</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/date/" rel="tag">date</a>, <a class="tag-link-link" href="/tags/iOS/" rel="tag">iOS</a>, <a class="tag-link-link" href="/tags/swift/" rel="tag">swift</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="SwiftDate-使用"><a href="#SwiftDate-使用" class="headerlink" title="SwiftDate 使用"></a>SwiftDate 使用</h1><p>Apple 中的<strong>Date</strong>完全独立于任何特定的地理位置，日历或区域设置，一个普通的<strong>Date</strong>对象只表示一个绝对值：实际上，它计算自 2001 年 1 月 1 日以来经过的秒数。</p>
+<p>在开发过程中，通常需要在更具体的上下文中表示日期：世界上的特定位置，使用指定<code>Local</code>的规则输出他们</p>
+<p>为了实现它，swiftDate 需要引入几个其他对象：<code>Calendar</code>, <code>TimeZone</code>, <code>Locale</code></p>
+<h2 id="Region-DateInRegion"><a href="#Region-DateInRegion" class="headerlink" title="Region &amp; DateInRegion"></a>Region &amp; DateInRegion</h2><p>为了简化特定上下文中的日期管理，SwiftDate 引入了两个简单的结构：</p>
+<ul>
+<li>Region 是一个结构体，它定义了世界上的区域 （TimeZone）、语言 （Locale） 和参考日历 （Calendar）。</li>
+<li>DateInRegion 表示特定区域中的绝对日期。使用此对象时，所有组件都将在创建对象的区域的上下文中进行评估。在 DateInRegion 中，您将具有 absoluteDate 和 region 属性。</li>
+</ul>
+<h3 id="The-Default-Region"><a href="#The-Default-Region" class="headerlink" title="The Default Region"></a>The Default Region</h3><p>在 SwiftDate 中，您可以同时使用 DateInRegion 和 Date 实例。当您需要提取时间单位、比较日期或评估特定操作时，即使是普通的 Date 对象也会使用 Region。</p>
+<p>但是，一个 Default Region 的特殊区域，默认情况下，它具有以下属性：</p>
+<ul>
+<li><p>时区 &#x3D; GMT - 这允许与默认的日期管理保持一致，除非您更改它。</p>
+</li>
+<li><p>日历 &#x3D; 当前设备日历（自动更新）</p>
+</li>
+<li><p>Locale &#x3D; 当前设备的区域设置（自动更新）</p>
+</li>
+</ul>
+<p>虽然始终使用 DateInRegion 是一个不错的选择，但您也可以通过更改默认区域来使用 Date，如下所示：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> rome <span class="operator">=</span> <span class="type">Region</span>(calendar: <span class="type">Calendars</span>.gregorian, zone: <span class="type">Zones</span>.europeRome, locale: <span class="type">Locales</span>.italian)</span><br><span class="line"><span class="type">SwiftDate</span>.defaultRegion <span class="operator">=</span> rome</span><br></pre></td></tr></table></figure>
+<p>从现在开始，所有 Date 实例都使用 rome 作为默认区域来解析和评估日期组件：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> dateInRome <span class="operator">=</span> <span class="string">&quot;2018-01-01 00:00:00&quot;</span>.toDate()<span class="operator">!</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Current year is <span class="subst">\(dateInRome.year)</span> and hour is <span class="subst">\(dateInRome.hour)</span>&quot;</span>) <span class="comment">// &quot;Current year is 2018 and hour is 0\n&quot;</span></span><br></pre></td></tr></table></figure>
+<p>我们仍然可以使用 convertTo（region：） 函数将此日期转换为以 UTC 为单位的默认绝对表示形式：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> dateInUTC <span class="operator">=</span> dateInRome.convertTo(region: <span class="type">Region</span>.<span class="type">UTC</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Current year is <span class="subst">\(dateInUTC.year)</span> and hour is <span class="subst">\(dateInUTC.hour)</span>&quot;</span>) <span class="comment">// &quot;Current year is 2017 and hour is 23\n&quot;</span></span><br></pre></td></tr></table></figure>
+<p>设置默认区域时要小心。我们仍然建议使用 DateInRegion 实例，这样您就可以显式读取区域。</p>
+<h3 id="Create-Region"><a href="#Create-Region" class="headerlink" title="Create Region"></a>Create Region</h3><p>现在，您可以创建新的 DateInRegion。创建新日期的方法有很多种：解析字符串、设置时间组件、从另一个日期或给定的时间间隔派生它。</p>
+<p>每个初始化方法都需要一个 region 参数，该参数定义表示日期的区域（默认值可能因 init 而异，如下所示）。</p>
+<h4 id="From-String"><a href="#From-String" class="headerlink" title="From String"></a>From String</h4><p>最常见的情况是解析字符串并将其转换为日期。如您所知，DateFormatter 的创建成本很高，如果您需要解析多个字符串，则应避免在循环中创建新实例。别担心：使用 SwiftDate，该库通过重用自己的解析器（沿调用方线程共享）来帮助您。</p>
+<p><code>DateInRegion 的 init(_：format：region)</code>可用于从字符串初始化新日期（在 String extensions 的 toXXX 前缀下可以使用各种快捷方式）。</p>
+<p>此对象采用三个参数：</p>
+<ul>
+<li>要解析的字符串 （String）</li>
+<li>字符串的格式 （String）：这表示表示字符串的格式。它是 unicode 格式（请参阅字段表）。如果跳过此参数，SwiftDate 将尝试使用 SwiftDate.autoFormats 数组中定义的内置格式之一来解析日期。如果您知道日期的格式，则应明确设置它以获得更好的性能。</li>
+<li>表示日期的区域 （Region）。默认情况下设置为 SwiftDate.defaultRegion。<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> date1 <span class="operator">=</span> <span class="type">DateInRegion</span>(<span class="string">&quot;2016-01-05&quot;</span>, format: <span class="string">&quot;yyyy-MM-dd&quot;</span>, region: regionNY)</span><br><span class="line"><span class="keyword">let</span> date2 <span class="operator">=</span> <span class="type">DateInRegion</span>(<span class="string">&quot;2015-09-24T13:20:55&quot;</span>, region: regionNY)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="Parse-Custom-Format"><a href="#Parse-Custom-Format" class="headerlink" title="Parse Custom Format"></a>Parse Custom Format</h2><p>将输入字符串转换为有效日期的最简单方法是使用可用作 String 实例扩展的 .toDate（） 函数之一。这些方法的目的是获得可以表示输入字符串的最佳格式，并使用它来生成有效的 DateInRegion。</p>
+<p>与 moment.js 等其他库一样，SwiftDate 有一个内置格式列表，它可以用来获得有效的结果。您可以通过调用 SwiftDate.autoFormats 来获取这些格式的列表。此数组的顺序很重要，因为 SwiftDate 会循环访问此列表，直到返回有效日期 （顺序本身允许库减少误报列表） 。</p>
+<p>您可以通过添加&#x2F;删除或替换此数组的内容来更改此列表。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.toDate(<span class="keyword">_</span> format: <span class="type">String</span>?, region: <span class="type">Region</span>?)</span><br><span class="line">.toDate(<span class="keyword">_</span> formats: [<span class="type">String</span>]<span class="operator">?</span>, region: <span class="type">Region</span>?)</span><br></pre></td></tr></table></figure>
+<p>functions takes as input two arguments:<br>functions 将两个参数作为输入：</p>
+<ul>
+<li>format （String|Array）：它是可选的，允许您显式设置 SwiftDate 必须用于解析日期的格式（或格式的有序列表）。允许的值列在 Unicode DateTime Table 中，您可以在此处找到。如果省略，则 SwiftDates 尝试解析遍历 SwiftDate.autoFormats 中列出的 auto 模式列表的字符串。</li>
+<li>region （Region）：描述表示日期的区域 （locale&#x2F;calendar&#x2F;timezone）。如果省略，则使用 iinstead 的默认区域 （SwiftDate.defaultRegion）。<br>这些函数的结果是一个可选的 DateInRegion 实例（如果解析失败，则返回 nil）。</li>
+</ul>
+<p>Some examples: 一些例子：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">_</span> <span class="operator">=</span> <span class="string">&quot;2018-01-01 15:00&quot;</span>.toDate()</span><br><span class="line"><span class="keyword">let</span> <span class="keyword">_</span> <span class="operator">=</span> <span class="string">&quot;15:40:50&quot;</span>.toDate(<span class="string">&quot;HH:mm:ss&quot;</span>)</span><br><span class="line"><span class="keyword">let</span> <span class="keyword">_</span> <span class="operator">=</span> <span class="string">&quot;2015-01-01 at 14&quot;</span>.toDate(<span class="string">&quot;yyyy-MM-dd &#x27;at&#x27; HH&quot;</span>, region: rome)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Support for locale</span></span><br><span class="line"><span class="keyword">let</span> itRegion <span class="operator">=</span> <span class="type">Region</span>(calendar: <span class="type">Calendars</span>.gregorian, zone: <span class="type">Zones</span>.europeRome, locale: <span class="type">Locales</span>.italian)</span><br><span class="line"><span class="keyword">let</span> enRegion <span class="operator">=</span> <span class="type">Region</span>(calendar: <span class="type">Calendars</span>.gregorian, zone: <span class="type">Zones</span>.europeRome, locale: <span class="type">Locales</span>.english)</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> srcString <span class="operator">=</span> <span class="string">&quot;July 15 - 15:30&quot;</span></span><br><span class="line"><span class="comment">// it returns nil because itRegion has Locales.italian</span></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">_</span> <span class="operator">=</span> srcString.toDate([<span class="string">&quot;yyyy-MM-dd&quot;</span>,<span class="string">&quot;MMM dd &#x27;-&#x27; HH:mm&quot;</span>], region: itRegion)</span><br><span class="line"><span class="comment">// it&#x27;s okay because enRegion has locale set to english</span></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">_</span> <span class="operator">=</span> srcString.toDate([<span class="string">&quot;yyyy-MM-dd&quot;</span>,<span class="string">&quot;MMM dd &#x27;-&#x27; HH:mm&quot;</span>], region: enRegion)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>性能为了保持性能，如果您知道 input 格式，则应传递 format 参数。<br>LOCALE 参数如果您使用可读的单位名称（例如表示月份的 MMM），请确保在 region 参数中选择正确的区域设置，以获得有效的结果。</p>
+</blockquote>
+<h2 id="Date-Formatting"><a href="#Date-Formatting" class="headerlink" title="Date Formatting"></a>Date Formatting</h2><p>日期格式设置非常简单，您可以指定自己的格式、区域设置或使用提供的任何格式、区域设置。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Date Formatting</span></span><br><span class="line"><span class="keyword">let</span> london <span class="operator">=</span> <span class="type">Region</span>(calendar: .gregorian, zone: .europeLondon, locale: .english)</span><br><span class="line"><span class="keyword">let</span> date <span class="operator">=</span> <span class="operator">...</span> <span class="comment">// 2017-07-22T18:27:02+02:00 in london region</span></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">_</span> <span class="operator">=</span> date.toDotNET() <span class="comment">// /Date(1500740822000+0200)/</span></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">_</span> <span class="operator">=</span> date.toISODate() <span class="comment">// 2017-07-22T18:27:02+02:00</span></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">_</span> <span class="operator">=</span> date.toFormat(<span class="string">&quot;dd MMM yyyy &#x27;at&#x27; HH:mm&quot;</span>) <span class="comment">// &quot;22 July 2017 at 18:27&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// You can also easily change locale when formatting a region</span></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">_</span> <span class="operator">=</span> date.toFormat(<span class="string">&quot;dd MMM&quot;</span>, locale: .italian) <span class="comment">// &quot;22 Luglio&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Time Interval Formatting as Countdown</span></span><br><span class="line"><span class="keyword">let</span> interval: <span class="type">TimeInterval</span> <span class="operator">=</span> (<span class="number">2</span>.hours.timeInterval) <span class="operator">+</span> (<span class="number">34</span>.minutes.timeInterval) <span class="operator">+</span> (<span class="number">5</span>.seconds.timeInterval)</span><br><span class="line"><span class="keyword">let</span> <span class="keyword">_</span> <span class="operator">=</span> interval.toClock() <span class="comment">// &quot;2:34:05&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Time Interval Formatting by Components</span></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">_</span> <span class="operator">=</span> interval.toString &#123;</span><br><span class="line">	<span class="variable">$0</span>.maximumUnitCount <span class="operator">=</span> <span class="number">4</span></span><br><span class="line">	<span class="variable">$0</span>.allowedUnits <span class="operator">=</span> [.day, .hour, .minute]</span><br><span class="line">	<span class="variable">$0</span>.collapsesLargestUnit <span class="operator">=</span> <span class="literal">true</span></span><br><span class="line">	<span class="variable">$0</span>.unitsStyle <span class="operator">=</span> .abbreviated</span><br><span class="line">&#125; <span class="comment">// &quot;2h 34m&quot;</span></span><br></pre></td></tr></table></figure>
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about">关于</a></li>
+         
+          <li><a href="/archives">归档</a></li>
+         
+          <li><a href="/tags">标签</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SwiftDate-%E4%BD%BF%E7%94%A8"><span class="toc-number">1.</span> <span class="toc-text">SwiftDate 使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Region-DateInRegion"><span class="toc-number">1.1.</span> <span class="toc-text">Region &amp; DateInRegion</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Default-Region"><span class="toc-number">1.1.1.</span> <span class="toc-text">The Default Region</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Create-Region"><span class="toc-number">1.1.2.</span> <span class="toc-text">Create Region</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#From-String"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">From String</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Parse-Custom-Format"><span class="toc-number">1.2.</span> <span class="toc-text">Parse Custom Format</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Date-Formatting"><span class="toc-number">1.3.</span> <span class="toc-text">Date Formatting</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/SwiftDate.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/SwiftDate.html&text=SwiftDate"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/SwiftDate.html&title=SwiftDate"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/SwiftDate.html&is_video=false&description=SwiftDate"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SwiftDate&body=Check out this article: http://effort.fun/post/SwiftDate.html"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/SwiftDate.html&title=SwiftDate"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/SwiftDate.html&title=SwiftDate"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/SwiftDate.html&title=SwiftDate"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/SwiftDate.html&title=SwiftDate"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/SwiftDate.html&name=SwiftDate&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/SwiftDate.html&t=SwiftDate"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    EFFORT
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'effort-fun';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+<!-- utterances Comments -->
+
+</body>
+</html>

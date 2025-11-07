@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="KVCKVC(Key-Value Coding)键值编码是利用NSKeyValueCoding非正式协议实现的一种机制，对象采用过这种机制来提供对其属性的间接访问  KVC通过对NSObject的扩展来实现，所有继承了NSObject的类都可以使用KVC NSArray、NSDictionary、NSSet、NSOrderedSet也遵循KVC协议 除了少数类型(结构体)以外都可以使用KVC123">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KVC原理">
+<meta property="og:url" content="http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html">
+<meta property="og:site_name" content="EFFORT × Blog">
+<meta property="og:description" content="KVCKVC(Key-Value Coding)键值编码是利用NSKeyValueCoding非正式协议实现的一种机制，对象采用过这种机制来提供对其属性的间接访问  KVC通过对NSObject的扩展来实现，所有继承了NSObject的类都可以使用KVC NSArray、NSDictionary、NSSet、NSOrderedSet也遵循KVC协议 除了少数类型(结构体)以外都可以使用KVC123">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-05-25T16:43:00.000Z">
+<meta property="article:modified_time" content="2025-11-07T00:50:08.000Z">
+<meta property="article:author" content="EFFORT">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="KVC">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>KVC原理</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <script>localStorage.getItem("dark_mode")==="dark"&&document.write(`<link rel="stylesheet" href="${location.origin}/css/dark.css">`)</script
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="EFFORT × Blog" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/post/RunLoop%E5%9C%A8%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8.html"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/post/RunLoop.html"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&text=KVC原理"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&title=KVC原理"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&is_video=false&description=KVC原理"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=KVC原理&body=Check out this article: http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&title=KVC原理"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&title=KVC原理"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&title=KVC原理"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&title=KVC原理"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&name=KVC原理&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&t=KVC原理"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#KVC"><span class="toc-number">1.</span> <span class="toc-text">KVC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%86%E5%90%88%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-number">2.</span> <span class="toc-text">集合操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86"><span class="toc-number">3.</span> <span class="toc-text">底层原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Setter-%E8%B5%8B%E5%80%BC%E6%96%B9%E6%B3%95"><span class="toc-number">3.0.1.</span> <span class="toc-text">Setter 赋值方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Getter-%E5%8F%96%E5%80%BC%E6%96%B9%E6%B3%95"><span class="toc-number">3.0.2.</span> <span class="toc-text">Getter 取值方法</span></a></li></ol></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        KVC原理
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">EFFORT</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2020-05-25T16:43:00.000Z" itemprop="datePublished">2020-05-25</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/KVC/" rel="tag">KVC</a>, <a class="tag-link-link" href="/tags/iOS/" rel="tag">iOS</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="KVC"><a href="#KVC" class="headerlink" title="KVC"></a>KVC</h2><p><strong>KVC(Key-Value Coding)键值编码</strong>是利用<strong>NSKeyValueCoding</strong>非正式协议实现的一种机制，对象采用过这种机制来提供对其属性的间接访问</p>
+<ul>
+<li><strong>KVC</strong>通过对<strong>NSObject</strong>的扩展来实现，所有继承了<strong>NSObject</strong>的类都可以使用<strong>KVC</strong></li>
+<li><strong>NSArray</strong>、<strong>NSDictionary</strong>、<strong>NSSet</strong>、<strong>NSOrderedSet</strong>也遵循<strong>KVC</strong>协议</li>
+<li>除了少数类型(结构体)以外都可以使用<strong>KVC</strong><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 通过 key 设值</span><br><span class="line">- (void)setValue:(nullable id)value forKey:(NSString *)key;</span><br><span class="line">// 通过 key 取值</span><br><span class="line">- (nullable id)valueForKey:(NSString *)key;</span><br><span class="line">// 通过 keyPath 设值</span><br><span class="line">- (void)setValue:(nullable id)value forKeyPath:(NSString *)keyPath;</span><br><span class="line">// 通过 keyPath 取值</span><br><span class="line">- (nullable id)valueForKeyPath:(NSString *)keyPath;</span><br></pre></td></tr></table></figure>
+<strong>NSKeyValueCoding</strong>类别的其它方法<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// 默认YES。如果返回YES，如果没有找到 set&lt;Key&gt; 方法的话， 会按照_key，_isKey，key，isKey的顺序搜索成员变量，返回NO则不会搜索</span><br><span class="line">+ (BOOL)accessInstanceVariablesDirectly;</span><br><span class="line">// 键值验证，可以通过高方法检验键值的正确性</span><br><span class="line">- (BOOL)validateValue:(inout id _Nullable * _Nonnull)ioValue forKey:(NSString *)inKey error:(out NSError **)outError;</span><br><span class="line">// 如果key不存在，并且没有搜索到和key相关的字段，就会调用此方法，抛出异常。两个方法分别对应 get 和 set</span><br><span class="line">- (nullable id)valueForUndefineKey:(NSString *)key;  // get</span><br><span class="line">- (void)setValue:(nullable id)value forUndefinedKey:(NSString *)key; // get</span><br><span class="line">// setValue 方法传 nil 时调用此方法</span><br><span class="line">// 当且仅当 NSNumber 和 NSValue 类型是才会调用此方法</span><br><span class="line">- (void)setNilValueForKey:(NSString *)key;</span><br><span class="line">// 一组 key 对应的value，将其转成字典返回，可用于将 Model 转成字典</span><br><span class="line">- (NSDictionary&lt;NSString *, id&gt; *)dictionaryWithValuesForKeys:(NSArray&lt;NSString *&gt; *)keys;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="集合操作符"><a href="#集合操作符" class="headerlink" title="集合操作符"></a>集合操作符</h2><ul>
+<li>聚合操作符<ul>
+<li><strong>@avg</strong>: 返回操作对象指定属性的平均值</li>
+<li><strong>@count</strong>: 返回操作对象指定属性的个数</li>
+<li><strong>@max</strong>: 返回操作对象指定属性的最大值</li>
+<li><strong>@min</strong>: 返回操作对象指定属性的最小值</li>
+<li><strong>@sum</strong>: 返回操作对象指定属性值之和</li>
+</ul>
+</li>
+<li>数组操作符<ul>
+<li><strong>@distinctUnionOfObjects</strong>: 返回操作对象指定属性的集合–去重</li>
+<li><strong>@unionOfObjects</strong>: 返回操作对象指定属性的集合</li>
+</ul>
+</li>
+<li>嵌套操作符<ul>
+<li><strong>@distinctUnionOfArrays</strong>: 返回操作对象(嵌套集合)指定属性的集合–去重，返回的是<strong>NSArray</strong></li>
+<li><strong>@unionOfArrays</strong>: 返回操作对象(集合)指定属性的集合</li>
+<li><strong>@distinctUnionOfSets</strong>: 返回操作对象(嵌套集合)指定属性的集合–去重，返回的是<strong>NSSet</strong></li>
+</ul>
+</li>
+</ul>
+<h2 id="底层原理"><a href="#底层原理" class="headerlink" title="底层原理"></a>底层原理</h2><h4 id="Setter-赋值方法"><a href="#Setter-赋值方法" class="headerlink" title="Setter 赋值方法"></a><em><strong>Setter</strong></em> 赋值方法</h4><ol>
+<li>按 <strong>set<Key></strong>:、**_set<Key>**: 顺序查找对象中是否有对应的方法<ul>
+<li>找到了直接调用方法赋值</li>
+<li>没有找到跳到第2步</li>
+</ul>
+</li>
+<li>通过判断<strong>accessInstanceVariablesDirectly</strong>返回值<ul>
+<li><strong>YES</strong> 按照 **_<key><strong>、</strong>_is<Key><strong>、</strong><key><strong>、</strong>is<Key>**的顺序查找成员变量，找到了赋值；没找到跳到第3步</li>
+<li><strong>is<Key></strong> 跳到第3步</li>
+</ul>
+</li>
+<li>调用 <strong>setValue: forUndfinedKey:</strong> 默认情况下抛出异常，子类可以重写该方法避免崩溃<!-- ![](./_image/2020-05-25/2020-05-25-17-15-05.png) --></li>
+</ol>
+<h4 id="Getter-取值方法"><a href="#Getter-取值方法" class="headerlink" title="Getter 取值方法"></a><em><strong>Getter</strong></em> 取值方法</h4><ol>
+<li>按照 <strong>get<Key><strong>、</strong><key><strong>、</strong>is<Key><strong>、</strong><key></strong> 顺序查找对象中是否有对应的方法</li>
+<li>查找是否有<strong>countOf<Key><strong>和</strong>objectIn<Key>AtIndex:<strong>方法(对应于</strong>NSArray</strong>类定义的原始方法)以及**<key>AtIndexes:<strong>方法(对应于</strong>NSArray<strong>方法</strong>objectsAtIndexes:**)<ul>
+<li>如果找到其中的第一个(<strong>countOf<Key></strong>)，再找到其他两个中的至少一个，则创建一个响应所有<strong>NSArray</strong>方法的代理集合对象，并返回该对象(即要么是<strong>countOf<Key> + objectIn<Key>AtIndex:<strong>，要么是</strong>+ <key>AtIndexes:，要么是countOf<Key> + objectIn<Key>AtIndex: + <key>AtIndexes:</strong>)</li>
+<li>如果没有找到，跳转到第3步</li>
+</ul>
+</li>
+<li>查找名为**counOf<Key><strong>、</strong>enumeratorOf<Key><strong>和</strong>memberOf<Key>**这三个方法(对应于NSSet类定义的原始方法)<ul>
+<li>如果找到这三个方法，则创建一个响应所有<strong>NSSet</strong>方法的代理集合对象，并返回该对象</li>
+<li>如果没有找到，跳转到第4步</li>
+</ul>
+</li>
+<li>判断<strong>accessInstanceVariablesDirectly</strong><ul>
+<li>为<strong>YES</strong>时按照**_<key><strong>、</strong>_is<Key><strong>、</strong><key><strong>、</strong>is<Key>**的顺序查找成员变量，找到了就取值</li>
+<li>为<strong>NO</strong>时跳转第6步</li>
+</ul>
+</li>
+<li>判断取出的属性值<ul>
+<li>属性值是对象，直接返回</li>
+<li>属性值不是对象，但是可以转化为<strong>NSNumber</strong>类型，则将属性值转化为<strong>NSNumber</strong>类型返回</li>
+<li>属性值不是对象，也不能转化为<strong>NSNumber</strong>类型，则将属性值转化为<strong>NSValue</strong>类型返回</li>
+</ul>
+</li>
+<li>调用**valueForUndefinedKey:**默认情况下抛出异常，子类可以重写该方法避免崩溃</li>
+</ol>
+<!-- ![](./_image/2020-05-25/2020-05-25-17-17-58.png) -->
+
+
+
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about">关于</a></li>
+         
+          <li><a href="/archives">归档</a></li>
+         
+          <li><a href="/tags">标签</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#KVC"><span class="toc-number">1.</span> <span class="toc-text">KVC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%86%E5%90%88%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-number">2.</span> <span class="toc-text">集合操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86"><span class="toc-number">3.</span> <span class="toc-text">底层原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Setter-%E8%B5%8B%E5%80%BC%E6%96%B9%E6%B3%95"><span class="toc-number">3.0.1.</span> <span class="toc-text">Setter 赋值方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Getter-%E5%8F%96%E5%80%BC%E6%96%B9%E6%B3%95"><span class="toc-number">3.0.2.</span> <span class="toc-text">Getter 取值方法</span></a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&text=KVC原理"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&title=KVC原理"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&is_video=false&description=KVC原理"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=KVC原理&body=Check out this article: http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&title=KVC原理"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&title=KVC原理"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&title=KVC原理"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&title=KVC原理"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&name=KVC原理&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/KVC%E5%8E%9F%E7%90%86.html&t=KVC原理"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    EFFORT
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'effort-fun';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+<!-- utterances Comments -->
+
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="APP的启动APP的启动分为2种 冷启动(Cold Launch)：从零开始启动APP 热启动(Warm Launch)：APP已经在内存中，再次点击图标启动APP  APP的启动时间优化，主要是针对冷启动进行优化 通过添加环境变量可以打印出APP的启动时间分析(Edit scheme -&gt; Run -&gt; Arguments) DYLD_PRINT_STATISTICS设置为1 DYL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="APP启动优化">
+<meta property="og:url" content="http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html">
+<meta property="og:site_name" content="EFFORT × Blog">
+<meta property="og:description" content="APP的启动APP的启动分为2种 冷启动(Cold Launch)：从零开始启动APP 热启动(Warm Launch)：APP已经在内存中，再次点击图标启动APP  APP的启动时间优化，主要是针对冷启动进行优化 通过添加环境变量可以打印出APP的启动时间分析(Edit scheme -&gt; Run -&gt; Arguments) DYLD_PRINT_STATISTICS设置为1 DYL">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-05-28T20:55:00.000Z">
+<meta property="article:modified_time" content="2025-11-07T00:50:08.000Z">
+<meta property="article:author" content="EFFORT">
+<meta property="article:tag" content="iOS WEB 前端 个人博客 博客 历史">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>APP启动优化</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <script>localStorage.getItem("dark_mode")==="dark"&&document.write(`<link rel="stylesheet" href="${location.origin}/css/dark.css">`)</script
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="EFFORT × Blog" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/post/%E8%80%97%E7%94%B5%E4%BC%98%E5%8C%96.html"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/post/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BB%84.html"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&text=APP启动优化"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&title=APP启动优化"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&is_video=false&description=APP启动优化"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=APP启动优化&body=Check out this article: http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&title=APP启动优化"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&title=APP启动优化"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&title=APP启动优化"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&title=APP启动优化"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&name=APP启动优化&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&t=APP启动优化"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#APP%E7%9A%84%E5%90%AF%E5%8A%A8"><span class="toc-number">1.</span> <span class="toc-text">APP的启动</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#APP%E7%9A%84%E5%90%AF%E5%8A%A8%E5%88%86%E4%B8%BA2%E7%A7%8D"><span class="toc-number">1.1.</span> <span class="toc-text">APP的启动分为2种</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#APP%E7%9A%84%E5%90%AF%E5%8A%A8%E6%97%B6%E9%97%B4%E4%BC%98%E5%8C%96%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%98%AF%E9%92%88%E5%AF%B9%E5%86%B7%E5%90%AF%E5%8A%A8%E8%BF%9B%E8%A1%8C%E4%BC%98%E5%8C%96"><span class="toc-number">1.2.</span> <span class="toc-text">APP的启动时间优化，主要是针对冷启动进行优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#APP%E7%9A%84%E5%86%B7%E5%90%AF%E5%8A%A8%E5%8F%AF%E4%BB%A5%E6%A6%82%E5%86%B5%E4%B8%BA3%E5%A4%A7%E9%98%B6%E6%AE%B5"><span class="toc-number">2.</span> <span class="toc-text">APP的冷启动可以概况为3大阶段</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#dyld"><span class="toc-number">2.1.</span> <span class="toc-text">dyld</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#runtime"><span class="toc-number">2.2.</span> <span class="toc-text">runtime</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#main"><span class="toc-number">2.3.</span> <span class="toc-text">main</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96"><span class="toc-number">3.</span> <span class="toc-text">优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#dyldb"><span class="toc-number">3.1.</span> <span class="toc-text">dyldb</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#runtime-1"><span class="toc-number">3.2.</span> <span class="toc-text">runtime</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#main-1"><span class="toc-number">3.3.</span> <span class="toc-text">main</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        APP启动优化
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">EFFORT</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2020-05-28T20:55:00.000Z" itemprop="datePublished">2020-05-28</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="APP的启动"><a href="#APP的启动" class="headerlink" title="APP的启动"></a>APP的启动</h2><h3 id="APP的启动分为2种"><a href="#APP的启动分为2种" class="headerlink" title="APP的启动分为2种"></a>APP的启动分为2种</h3><ul>
+<li>冷启动(Cold Launch)：从零开始启动APP</li>
+<li>热启动(Warm Launch)：APP已经在内存中，再次点击图标启动APP</li>
+</ul>
+<h3 id="APP的启动时间优化，主要是针对冷启动进行优化"><a href="#APP的启动时间优化，主要是针对冷启动进行优化" class="headerlink" title="APP的启动时间优化，主要是针对冷启动进行优化"></a>APP的启动时间优化，主要是针对冷启动进行优化</h3><ul>
+<li>通过添加环境变量可以打印出APP的启动时间分析(Edit scheme -&gt; Run -&gt; Arguments)<ul>
+<li>DYLD_PRINT_STATISTICS设置为1</li>
+<li>DYLD_PRINT_STATISTICS_DETAILS设置为1，查看跟详细的信息</li>
+</ul>
+</li>
+</ul>
+<h2 id="APP的冷启动可以概况为3大阶段"><a href="#APP的冷启动可以概况为3大阶段" class="headerlink" title="APP的冷启动可以概况为3大阶段"></a>APP的冷启动可以概况为3大阶段</h2><h3 id="dyld"><a href="#dyld" class="headerlink" title="dyld"></a>dyld</h3><p>dyld(dynamic link editor)，Apple的动态链接器，可以用来装载Mach-O文件(可执行文件、动态库等)<br>启动APP，dyld做的事情</p>
+<ul>
+<li>装载APP的可执行文件，同时会递归加载所有依赖的动态库</li>
+<li>当dyld把可执行文件、动态库都装载完毕后，会通知Runtime进行下一个处理</li>
+</ul>
+<h3 id="runtime"><a href="#runtime" class="headerlink" title="runtime"></a>runtime</h3><ul>
+<li>调用map_images进行可执行文件内容的解析和处理</li>
+<li>在load_images中调用call_load_methods，调用所有Class和Category的+load方法</li>
+<li>进行各种objc结构的初始化(注册Objc类、初始化类对象等等)</li>
+<li>调用C++静态初始化器和__attribute__((constructor))修饰的函数</li>
+</ul>
+<p>到此为止，可执行文件和动态库中所有的符号(Class，Protocol，Selector，IMP，…)都已经按格式成功加载到内从中，被runtime所管理</p>
+<h3 id="main"><a href="#main" class="headerlink" title="main"></a>main</h3><p>APP的启动由dyld主导，将可执行文件加载到内存，顺便加载所有依赖的动态库<br>并由runtime负责加载成objc定义的结构<br>所有初始化结束后，dyld就会调用Main函数</p>
+<h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><h3 id="dyldb"><a href="#dyldb" class="headerlink" title="dyldb"></a>dyldb</h3><ul>
+<li>减少动态库、合并一些动态库</li>
+<li>减少Objc类、分类的数量、减少Selector数量</li>
+<li>减少C++虚函数数量</li>
+<li>swift尽量使用struct</li>
+</ul>
+<h3 id="runtime-1"><a href="#runtime-1" class="headerlink" title="runtime"></a>runtime</h3><ul>
+<li>用 +initialize方法和dispatch_once取代所有的__attribute__((constructor))、C++静态构造器、Object的+load</li>
+</ul>
+<h3 id="main-1"><a href="#main-1" class="headerlink" title="main"></a>main</h3><ul>
+<li>尽可能将一些操作延迟，不要全部放在finishLaunching方法中</li>
+</ul>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about">关于</a></li>
+         
+          <li><a href="/archives">归档</a></li>
+         
+          <li><a href="/tags">标签</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#APP%E7%9A%84%E5%90%AF%E5%8A%A8"><span class="toc-number">1.</span> <span class="toc-text">APP的启动</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#APP%E7%9A%84%E5%90%AF%E5%8A%A8%E5%88%86%E4%B8%BA2%E7%A7%8D"><span class="toc-number">1.1.</span> <span class="toc-text">APP的启动分为2种</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#APP%E7%9A%84%E5%90%AF%E5%8A%A8%E6%97%B6%E9%97%B4%E4%BC%98%E5%8C%96%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%98%AF%E9%92%88%E5%AF%B9%E5%86%B7%E5%90%AF%E5%8A%A8%E8%BF%9B%E8%A1%8C%E4%BC%98%E5%8C%96"><span class="toc-number">1.2.</span> <span class="toc-text">APP的启动时间优化，主要是针对冷启动进行优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#APP%E7%9A%84%E5%86%B7%E5%90%AF%E5%8A%A8%E5%8F%AF%E4%BB%A5%E6%A6%82%E5%86%B5%E4%B8%BA3%E5%A4%A7%E9%98%B6%E6%AE%B5"><span class="toc-number">2.</span> <span class="toc-text">APP的冷启动可以概况为3大阶段</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#dyld"><span class="toc-number">2.1.</span> <span class="toc-text">dyld</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#runtime"><span class="toc-number">2.2.</span> <span class="toc-text">runtime</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#main"><span class="toc-number">2.3.</span> <span class="toc-text">main</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96"><span class="toc-number">3.</span> <span class="toc-text">优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#dyldb"><span class="toc-number">3.1.</span> <span class="toc-text">dyldb</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#runtime-1"><span class="toc-number">3.2.</span> <span class="toc-text">runtime</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#main-1"><span class="toc-number">3.3.</span> <span class="toc-text">main</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&text=APP启动优化"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&title=APP启动优化"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&is_video=false&description=APP启动优化"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=APP启动优化&body=Check out this article: http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&title=APP启动优化"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&title=APP启动优化"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&title=APP启动优化"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&title=APP启动优化"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&name=APP启动优化&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/APP%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96.html&t=APP启动优化"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    EFFORT
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'effort-fun';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+<!-- utterances Comments -->
+
+</body>
+</html>

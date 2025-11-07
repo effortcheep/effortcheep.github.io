@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="MySQL查询优化查询优化就是MySQl会将程序员编写的⼀些⽐较耗费性能的语句进⾏查询重写  条件化简 移除不必要的括号 常量传递：（1）某个表达式是某个列和某个常量的等值匹配，会直接⽤常量替换列名 移除没⽤的条件：（1）⽐如永远为true或false： 表达式计算：（1）表达式只包含常量的话，值会被计算出来（2）如果某个列在函数中或者以运算形式出现，优化器不会进⾏化简 having和where⼦">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql 查询优化">
+<meta property="og:url" content="http://effort.fun/post/mysql-query-optimization.html">
+<meta property="og:site_name" content="EFFORT × Blog">
+<meta property="og:description" content="MySQL查询优化查询优化就是MySQl会将程序员编写的⼀些⽐较耗费性能的语句进⾏查询重写  条件化简 移除不必要的括号 常量传递：（1）某个表达式是某个列和某个常量的等值匹配，会直接⽤常量替换列名 移除没⽤的条件：（1）⽐如永远为true或false： 表达式计算：（1）表达式只包含常量的话，值会被计算出来（2）如果某个列在函数中或者以运算形式出现，优化器不会进⾏化简 having和where⼦">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-02-03T14:33:01.000Z">
+<meta property="article:modified_time" content="2025-11-07T00:50:08.000Z">
+<meta property="article:author" content="EFFORT">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Mysql 查询优化</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <script>localStorage.getItem("dark_mode")==="dark"&&document.write(`<link rel="stylesheet" href="${location.origin}/css/dark.css">`)</script
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="EFFORT × Blog" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/post/mysql-transaction-isolation.html"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/post/mysql-index.html"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/mysql-query-optimization.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/mysql-query-optimization.html&text=Mysql 查询优化"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/mysql-query-optimization.html&title=Mysql 查询优化"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/mysql-query-optimization.html&is_video=false&description=Mysql 查询优化"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Mysql 查询优化&body=Check out this article: http://effort.fun/post/mysql-query-optimization.html"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/mysql-query-optimization.html&title=Mysql 查询优化"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/mysql-query-optimization.html&title=Mysql 查询优化"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/mysql-query-optimization.html&title=Mysql 查询优化"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/mysql-query-optimization.html&title=Mysql 查询优化"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/mysql-query-optimization.html&name=Mysql 查询优化&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/mysql-query-optimization.html&t=Mysql 查询优化"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#MySQL%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">MySQL查询优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%BC%A6%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96"><span class="toc-number">1.0.1.</span> <span class="toc-text">⼦查询优化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%BC%A6%E6%9F%A5%E8%AF%A2%E7%9A%84%E6%89%A7%E2%BE%8F%E2%BD%85%E5%BC%8F"><span class="toc-number">1.0.2.</span> <span class="toc-text">⼦查询的执⾏⽅式</span></a></li></ol></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Mysql 查询优化
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">EFFORT</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2021-02-03T14:33:01.000Z" itemprop="datePublished">2021-02-03</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/mysql/" rel="tag">mysql</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="MySQL查询优化"><a href="#MySQL查询优化" class="headerlink" title="MySQL查询优化"></a>MySQL查询优化</h2><p>查询优化就是MySQl会将程序员编写的⼀些⽐较耗费性能的语句进⾏查询重写</p>
+<ol>
+<li>条件化简</li>
+<li>移除不必要的括号</li>
+<li>常量传递：<br>（1）某个表达式是某个列和某个常量的等值匹配，会直接⽤常量替换列名</li>
+<li>移除没⽤的条件：<br>（1）⽐如永远为true或false：</li>
+<li>表达式计算：<br>（1）表达式只包含常量的话，值会被计算出来<br>（2）如果某个列在函数中或者以运算形式出现，优化器不会进⾏化简</li>
+<li>having和where⼦句的合并：<br>（1）查询语句中没有sum、max这样的聚集函数以及group⼦句的话，优化器会将having和where⼦句合并<br>（2）having⼦句⽤于分组后过滤，where⽤于分组前合并</li>
+<li>常量表检测：<br>（1）使⽤主键等值匹配、使⽤唯⼀⼆级索引列等值匹配进⾏查询的表称为常量表<br>（2）优化器会优先执⾏常量表查询，因为速度⾮常快</li>
+<li>外连接消除</li>
+<li>优化器会将右连接转换为左连接查询</li>
+<li>空值拒绝<br>（1）在外连接查询中，指定的where⼦句中包含被驱动表的列不为null值的条件（就是不允许查出来的记录中含有null值）<br>（2）被驱动表的where⼦句符合空值拒绝的条件后，外连接和内连接可以相互转换</li>
+</ol>
+<h4 id="⼦查询优化"><a href="#⼦查询优化" class="headerlink" title="⼦查询优化"></a>⼦查询优化</h4><ol start="11">
+<li>⼦查询简介<br>在⼀个查询语句中的某个位置可以出现另⼀个查询语句，这另⼀个查询就叫⼦查询<br>（1）按出现位置分类</li>
+</ol>
+<ul>
+<li>在select⼦句中<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> (<span class="keyword">select</span> m1 <span class="keyword">from</span> t1 limit <span class="number">1</span>);</span><br></pre></td></tr></table></figure></li>
+<li>在from⼦句中  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> m, n <span class="keyword">from</span> (<span class="keyword">select</span> ...);</span><br></pre></td></tr></table></figure>
+将这种⼦查询的结果当做⼀个表，在from⼦句中的⼦查询称为派⽣表</li>
+<li>在where或on⼦句中  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t1 <span class="keyword">where</span> m1 <span class="keyword">in</span> (<span class="keyword">select</span> ...);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>（2）按返回的结果集分类</p>
+<ul>
+<li>标量⼦查询<br>  只返回⼀个单⼀值  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> (<span class="keyword">select</span> m1 <span class="keyword">from</span> t1 limit <span class="number">1</span>);</span><br></pre></td></tr></table></figure></li>
+<li>⾏⼦查询<br>  返回⼀条记录，需要包含多个列  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t1 <span class="keyword">where</span> (m1, n1) <span class="operator">=</span> (<span class="keyword">select</span> m2, n2 <span class="keyword">from</span> t2 limit <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+  使⽤limit 1保证⼦查询的结果只有⼀条记录</li>
+<li>列⼦查询<br>  返回⼀个列的数据，可能包含多条纪录  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t1 <span class="keyword">where</span> m1 <span class="keyword">in</span> (<span class="keyword">select</span> m2 <span class="keyword">from</span> t2);</span><br></pre></td></tr></table></figure></li>
+<li>表⼦查询<br>  ⼦查询的结果既有多条纪录，又有多个列  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t1 <span class="keyword">where</span> (m1, n1) <span class="operator">=</span> (<span class="keyword">select</span> m2, n2 <span class="keyword">from</span> t2);</span><br></pre></td></tr></table></figure></li>
+<li>按外层查询关系分类</li>
+<li>不相关⼦查询<br>⼦查询可以单独运⾏出结果，不依赖于外层查询的值</li>
+</ul>
+<p>上⾯都是例⼦</p>
+<ul>
+<li>相关⼦查询<br>⼦查询的执⾏需要依赖于外层查询的值<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t1 <span class="keyword">where</span> m1 <span class="keyword">in</span> (<span class="keyword">select</span> m2 <span class="keyword">from</span> t2 <span class="keyword">where</span> n1 <span class="operator">=</span> n2);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>⼦查询的注意事项：</p>
+<ol>
+<li>必须⽤⼩括号括起来</li>
+<li>select⼦句中的⼦查询必须是标量⼦查询</li>
+<li>要想得到标量⼦查询&#x2F;⾏⼦查询，应该使⽤limit 1</li>
+<li>对于[not] in&#x2F;any&#x2F;som&#x2F;all⼦查询来说，⼦查询不允许出现limit</li>
+<li>⼦查询中不必使⽤order by：⼦查询相当于⼀个集合，集合没必要排序</li>
+<li>⼦查询中不必使⽤distinct，因为集合也不需要去重</li>
+<li>⼦查询中没有聚集函数以及having⼦句时，不必使⽤group by⼦句</li>
+</ol>
+<h4 id="⼦查询的执⾏⽅式"><a href="#⼦查询的执⾏⽅式" class="headerlink" title="⼦查询的执⾏⽅式"></a>⼦查询的执⾏⽅式</h4><p>（1）不优化</p>
+<ul>
+<li>对于不相关⼦查询，先执⾏⼦查询，再将⼦查询的结果作为外层查询的参数</li>
+<li>对于相关⼦查询，先从外层查询中取⼀条记录，取相关列进⾏⼦查询，如此循环</li>
+</ul>
+<p>（2）in⼦查询的优化<br>（3）物化</p>
+<ul>
+<li>将⼦查询的结果写⼊临时表中，该临时表就是物化表</li>
+<li>基于内存的物化表建⽴哈希索引，基于磁盘的物化表建⽴B+树索引<br>（4）半连接</li>
+<li>s1表和s2表半连接的意思是：对于s1表的某条肌理，只关⼼在s2表中是否存在与之匹配的记录，⽽不关⼼与多少条记录与之匹配</li>
+<li>这只是MySQL内部执⾏⼦查询的⼀种⽅式，不⾯向⽤户<br>（5）实现⽅式<br>（6）table pullout（表上拉）</li>
+<li>查询列表只有主键或唯⼀索引列是，将⼦查询中的表上拉到外层查询的from⼦句中</li>
+</ul>
+<p>（7）重复值消除</p>
+<ul>
+<li>⽤临时表消除半连接结果集的重复值</li>
+<li>松散扫描</li>
+<li>半连接物化</li>
+</ul>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about">关于</a></li>
+         
+          <li><a href="/archives">归档</a></li>
+         
+          <li><a href="/tags">标签</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#MySQL%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">MySQL查询优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%BC%A6%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96"><span class="toc-number">1.0.1.</span> <span class="toc-text">⼦查询优化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%BC%A6%E6%9F%A5%E8%AF%A2%E7%9A%84%E6%89%A7%E2%BE%8F%E2%BD%85%E5%BC%8F"><span class="toc-number">1.0.2.</span> <span class="toc-text">⼦查询的执⾏⽅式</span></a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/mysql-query-optimization.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/mysql-query-optimization.html&text=Mysql 查询优化"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/mysql-query-optimization.html&title=Mysql 查询优化"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/mysql-query-optimization.html&is_video=false&description=Mysql 查询优化"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Mysql 查询优化&body=Check out this article: http://effort.fun/post/mysql-query-optimization.html"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/mysql-query-optimization.html&title=Mysql 查询优化"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/mysql-query-optimization.html&title=Mysql 查询优化"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/mysql-query-optimization.html&title=Mysql 查询优化"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/mysql-query-optimization.html&title=Mysql 查询优化"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/mysql-query-optimization.html&name=Mysql 查询优化&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/mysql-query-optimization.html&t=Mysql 查询优化"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    EFFORT
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'effort-fun';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+<!-- utterances Comments -->
+
+</body>
+</html>

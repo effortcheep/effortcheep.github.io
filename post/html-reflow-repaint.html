@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="回流(Reflow)当Render Tree中部分或全部元素的尺寸、结构、或某些属性发生改变时，浏览器重新渲染部分或全部文档的过程称为回流。 会导致回流的操作：  页面首次渲染 浏览器窗口大小发生改变 元素尺寸或位置发生改变 元素内容变化（文字数量或图片大小等等） 元素字体大小变化 添加或者删除可见的DOM元素 激活CSS伪类（例如：:hover） 查询某些属性或调用某些方法  一些常用且会导致回">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浏览器回流和重绘">
+<meta property="og:url" content="http://effort.fun/post/html-reflow-repaint.html">
+<meta property="og:site_name" content="EFFORT × Blog">
+<meta property="og:description" content="回流(Reflow)当Render Tree中部分或全部元素的尺寸、结构、或某些属性发生改变时，浏览器重新渲染部分或全部文档的过程称为回流。 会导致回流的操作：  页面首次渲染 浏览器窗口大小发生改变 元素尺寸或位置发生改变 元素内容变化（文字数量或图片大小等等） 元素字体大小变化 添加或者删除可见的DOM元素 激活CSS伪类（例如：:hover） 查询某些属性或调用某些方法  一些常用且会导致回">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-02-11T12:57:16.000Z">
+<meta property="article:modified_time" content="2025-11-07T00:50:08.000Z">
+<meta property="article:author" content="EFFORT">
+<meta property="article:tag" content="html">
+<meta property="article:tag" content="回流">
+<meta property="article:tag" content="重绘">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>浏览器回流和重绘</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <script>localStorage.getItem("dark_mode")==="dark"&&document.write(`<link rel="stylesheet" href="${location.origin}/css/dark.css">`)</script
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="EFFORT × Blog" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/post/tcp.html"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/post/javascript-task-queue.html"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/html-reflow-repaint.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/html-reflow-repaint.html&text=浏览器回流和重绘"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/html-reflow-repaint.html&title=浏览器回流和重绘"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/html-reflow-repaint.html&is_video=false&description=浏览器回流和重绘"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=浏览器回流和重绘&body=Check out this article: http://effort.fun/post/html-reflow-repaint.html"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/html-reflow-repaint.html&title=浏览器回流和重绘"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/html-reflow-repaint.html&title=浏览器回流和重绘"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/html-reflow-repaint.html&title=浏览器回流和重绘"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/html-reflow-repaint.html&title=浏览器回流和重绘"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/html-reflow-repaint.html&name=浏览器回流和重绘&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/html-reflow-repaint.html&t=浏览器回流和重绘"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E6%B5%81-Reflow"><span class="toc-number">1.</span> <span class="toc-text">回流(Reflow)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E7%BB%98-Repaint"><span class="toc-number">2.</span> <span class="toc-text">重绘(Repaint)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BD%93%E8%BE%93%E5%85%A5%E7%BD%91%E5%9D%80%E5%90%8E%EF%BC%8C%E5%88%B0%E7%BD%91%E9%A1%B5%E6%98%BE%E7%A4%BA%EF%BC%8C%E5%85%B6%E9%97%B4%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-number">3.</span> <span class="toc-text">当输入网址后，到网页显示，其间发生了什么</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        浏览器回流和重绘
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">EFFORT</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-02-11T12:57:16.000Z" itemprop="datePublished">2023-02-11</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/html/" rel="tag">html</a>, <a class="tag-link-link" href="/tags/%E5%9B%9E%E6%B5%81/" rel="tag">回流</a>, <a class="tag-link-link" href="/tags/%E9%87%8D%E7%BB%98/" rel="tag">重绘</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="回流-Reflow"><a href="#回流-Reflow" class="headerlink" title="回流(Reflow)"></a>回流(Reflow)</h2><p>当Render Tree中部分或全部元素的尺寸、结构、或某些属性发生改变时，浏览器重新渲染部分或全部文档的过程称为回流。</p>
+<p>会导致回流的操作：</p>
+<ul>
+<li>页面首次渲染</li>
+<li>浏览器窗口大小发生改变</li>
+<li>元素尺寸或位置发生改变</li>
+<li>元素内容变化（文字数量或图片大小等等）</li>
+<li>元素字体大小变化</li>
+<li>添加或者删除可见的DOM元素</li>
+<li>激活CSS伪类（例如：:hover）</li>
+<li>查询某些属性或调用某些方法</li>
+</ul>
+<p>一些常用且会导致回流的属性和方法：</p>
+<ul>
+<li>clientWidth、clientHeight、clientTop、clientLeft</li>
+<li>offsetWidth、offsetHeight、offsetTop、offsetLeft</li>
+<li>scrollWidth、scrollHeight、scrollTop、scrollLeft</li>
+<li>scrollIntoView()、scrollIntoViewIfNeeded()</li>
+<li>getComputedStyle()</li>
+<li>getBoundingClientRect()</li>
+<li>scrollTo()</li>
+</ul>
+<h2 id="重绘-Repaint"><a href="#重绘-Repaint" class="headerlink" title="重绘(Repaint)"></a>重绘(Repaint)</h2><p>当页面中元素样式的改变并不影响它在文档流中的位置时（例如：color、background-color、visibility等），浏览器会将新样式赋予给元素并重新绘制它，这个过程称为重绘。</p>
+<h2 id="当输入网址后，到网页显示，其间发生了什么"><a href="#当输入网址后，到网页显示，其间发生了什么" class="headerlink" title="当输入网址后，到网页显示，其间发生了什么"></a>当输入网址后，到网页显示，其间发生了什么</h2><ul>
+<li><p>浏览器解析 URL<br><a target="_blank" rel="noopener" href="http://web服务器/%E6%96%87%E4%BB%B6">http://web服务器/目录/../文件</a></p>
+<ul>
+<li>http 访问数据的协议</li>
+<li>&#x2F;&#x2F; 后面 服务器名称</li>
+<li>资源路径</li>
+</ul>
+</li>
+<li><p>对 URL 进行解析之后，浏览器确定了 Web 服务器和文件名，根据这些信息来生成 HTTP 请求消息了</p>
+</li>
+<li><p>通过 DNS 服务器获取 真实 IP 地址</p>
+</li>
+<li><p>通过 DNS 获取到 IP 后，就可以把 HTTP 的传输工作交给操作系统中的协议栈，应用程序(浏览器)通过调用 Socket 库</p>
+</li>
+<li><p>建立链接  TCP 三次握手</p>
+</li>
+<li><p>服务器 层层解析 把相应数据装在 HTTP 响应报 文里</p>
+</li>
+<li><p>客户端收到后 交给浏览器去渲染页面</p>
+</li>
+<li><p>最后，客户端要离开了，向服务器发起了 TCP 四次挥手，至此双方的连接就断开了</p>
+</li>
+</ul>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about">关于</a></li>
+         
+          <li><a href="/archives">归档</a></li>
+         
+          <li><a href="/tags">标签</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E6%B5%81-Reflow"><span class="toc-number">1.</span> <span class="toc-text">回流(Reflow)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E7%BB%98-Repaint"><span class="toc-number">2.</span> <span class="toc-text">重绘(Repaint)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BD%93%E8%BE%93%E5%85%A5%E7%BD%91%E5%9D%80%E5%90%8E%EF%BC%8C%E5%88%B0%E7%BD%91%E9%A1%B5%E6%98%BE%E7%A4%BA%EF%BC%8C%E5%85%B6%E9%97%B4%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-number">3.</span> <span class="toc-text">当输入网址后，到网页显示，其间发生了什么</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/html-reflow-repaint.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/html-reflow-repaint.html&text=浏览器回流和重绘"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/html-reflow-repaint.html&title=浏览器回流和重绘"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/html-reflow-repaint.html&is_video=false&description=浏览器回流和重绘"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=浏览器回流和重绘&body=Check out this article: http://effort.fun/post/html-reflow-repaint.html"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/html-reflow-repaint.html&title=浏览器回流和重绘"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/html-reflow-repaint.html&title=浏览器回流和重绘"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/html-reflow-repaint.html&title=浏览器回流和重绘"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/html-reflow-repaint.html&title=浏览器回流和重绘"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/html-reflow-repaint.html&name=浏览器回流和重绘&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/html-reflow-repaint.html&t=浏览器回流和重绘"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    EFFORT
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'effort-fun';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+<!-- utterances Comments -->
+
+</body>
+</html>

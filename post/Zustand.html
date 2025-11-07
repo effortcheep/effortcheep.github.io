@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Zustand 使用说明什么是 ZustandZustand 是一个小巧、快速且可扩展的状态管理解决方案,基于简化的 flux 原则 。它提供了基于 hooks 的舒适 API,没有样板代码,也不强制使用特定模式 。 安装1npm install zustand  基础使用1. 创建 Store使用 create 函数创建一个 store,它会返回一个 React Hook: 1234567imp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zustand">
+<meta property="og:url" content="http://effort.fun/post/Zustand.html">
+<meta property="og:site_name" content="EFFORT × Blog">
+<meta property="og:description" content="Zustand 使用说明什么是 ZustandZustand 是一个小巧、快速且可扩展的状态管理解决方案,基于简化的 flux 原则 。它提供了基于 hooks 的舒适 API,没有样板代码,也不强制使用特定模式 。 安装1npm install zustand  基础使用1. 创建 Store使用 create 函数创建一个 store,它会返回一个 React Hook: 1234567imp">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-11-06T20:17:03.000Z">
+<meta property="article:modified_time" content="2025-11-07T00:50:08.000Z">
+<meta property="article:author" content="EFFORT">
+<meta property="article:tag" content="React">
+<meta property="article:tag" content="Zustand">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Zustand</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <script>localStorage.getItem("dark_mode")==="dark"&&document.write(`<link rel="stylesheet" href="${location.origin}/css/dark.css">`)</script
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="EFFORT × Blog" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/post/neovim-config.html"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/Zustand.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/Zustand.html&text=Zustand"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/Zustand.html&title=Zustand"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/Zustand.html&is_video=false&description=Zustand"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Zustand&body=Check out this article: http://effort.fun/post/Zustand.html"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/Zustand.html&title=Zustand"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/Zustand.html&title=Zustand"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/Zustand.html&title=Zustand"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/Zustand.html&title=Zustand"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/Zustand.html&name=Zustand&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/Zustand.html&t=Zustand"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Zustand-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E"><span class="toc-number">1.</span> <span class="toc-text">Zustand 使用说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-Zustand"><span class="toc-number">1.1.</span> <span class="toc-text">什么是 Zustand</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-number">1.2.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8"><span class="toc-number">1.3.</span> <span class="toc-text">基础使用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E5%88%9B%E5%BB%BA-Store"><span class="toc-number">1.3.1.</span> <span class="toc-text">1. 创建 Store</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E5%9C%A8%E7%BB%84%E4%BB%B6%E4%B8%AD%E4%BD%BF%E7%94%A8"><span class="toc-number">1.3.2.</span> <span class="toc-text">2. 在组件中使用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="toc-number">1.4.</span> <span class="toc-text">核心概念</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E7%8A%B6%E6%80%81%E5%88%87%E7%89%87"><span class="toc-number">1.4.1.</span> <span class="toc-text">选择状态切片</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5-Actions"><span class="toc-number">1.4.2.</span> <span class="toc-text">异步 Actions</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="toc-number">2.</span> <span class="toc-text">最佳实践</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%BD%BF%E7%94%A8-Slices-%E6%A8%A1%E5%BC%8F%E7%BB%84%E7%BB%87%E5%A4%A7%E5%9E%8B-Store"><span class="toc-number">2.1.</span> <span class="toc-text">1. 使用 Slices 模式组织大型 Store</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%BD%BF%E7%94%A8%E4%B8%AD%E9%97%B4%E4%BB%B6%E5%A2%9E%E5%BC%BA%E5%8A%9F%E8%83%BD"><span class="toc-number">2.2.</span> <span class="toc-text">2. 使用中间件增强功能</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Persist-%E4%B8%AD%E9%97%B4%E4%BB%B6-%E6%8C%81%E4%B9%85%E5%8C%96%E7%8A%B6%E6%80%81"><span class="toc-number">2.2.1.</span> <span class="toc-text">Persist 中间件 - 持久化状态</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DevTools-%E4%B8%AD%E9%97%B4%E4%BB%B6-%E8%B0%83%E8%AF%95"><span class="toc-number">2.2.2.</span> <span class="toc-text">DevTools 中间件 - 调试</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-TypeScript-%E4%BD%BF%E7%94%A8"><span class="toc-number">2.3.</span> <span class="toc-text">3. TypeScript 使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-React-Context-%E9%9B%86%E6%88%90"><span class="toc-number">2.4.</span> <span class="toc-text">4. React Context 集成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%8D%95%E4%B8%80-Store-%E6%9E%B6%E6%9E%84"><span class="toc-number">2.5.</span> <span class="toc-text">5. 单一 Store 架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">2.6.</span> <span class="toc-text">6. 性能优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Notes"><span class="toc-number">3.</span> <span class="toc-text">Notes</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Zustand
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">EFFORT</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-11-06T20:17:03.000Z" itemprop="datePublished">2025-11-06</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/React/" rel="tag">React</a>, <a class="tag-link-link" href="/tags/Zustand/" rel="tag">Zustand</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="Zustand-使用说明"><a href="#Zustand-使用说明" class="headerlink" title="Zustand 使用说明"></a><a target="_blank" rel="noopener" href="https://deepwiki.com/search/_c539430c-8390-46a6-a095-b806c16dc5ac">Zustand 使用说明</a></h2><h3 id="什么是-Zustand"><a href="#什么是-Zustand" class="headerlink" title="什么是 Zustand"></a>什么是 Zustand</h3><p>Zustand 是一个小巧、快速且可扩展的状态管理解决方案,基于简化的 flux 原则 。它提供了基于 hooks 的舒适 API,没有样板代码,也不强制使用特定模式 。</p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install zustand</span><br></pre></td></tr></table></figure>
+
+<h3 id="基础使用"><a href="#基础使用" class="headerlink" title="基础使用"></a>基础使用</h3><h4 id="1-创建-Store"><a href="#1-创建-Store" class="headerlink" title="1. 创建 Store"></a>1. 创建 Store</h4><p>使用 <code>create</code> 函数创建一个 store,它会返回一个 React Hook:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; create &#125; <span class="keyword">from</span> <span class="string">&#x27;zustand&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> useBearStore = <span class="title function_">create</span>(<span class="function">(<span class="params">set</span>) =&gt;</span> (&#123;</span><br><span class="line">  <span class="attr">bears</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">increasePopulation</span>: <span class="function">() =&gt;</span> <span class="title function_">set</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> (&#123; <span class="attr">bears</span>: state.<span class="property">bears</span> + <span class="number">1</span> &#125;)),</span><br><span class="line">  <span class="attr">removeAllBears</span>: <span class="function">() =&gt;</span> <span class="title function_">set</span>(&#123; <span class="attr">bears</span>: <span class="number">0</span> &#125;),</span><br><span class="line">&#125;))</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-在组件中使用"><a href="#2-在组件中使用" class="headerlink" title="2. 在组件中使用"></a>2. 在组件中使用</h4><p>直接在任何组件中使用 hook,无需 Provider 包裹 :</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">BearCounter</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> bears = <span class="title function_">useBearStore</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> state.<span class="property">bears</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="language-xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>&#123;bears&#125; around here ...<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">Controls</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> increasePopulation = <span class="title function_">useBearStore</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> state.<span class="property">increasePopulation</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="language-xml"><span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;increasePopulation&#125;</span>&gt;</span>one up<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h3><h4 id="选择状态切片"><a href="#选择状态切片" class="headerlink" title="选择状态切片"></a>选择状态切片</h4><p>使用 selector 函数选择特定的状态,组件只会在选中的状态变化时重新渲染 :</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> nuts = <span class="title function_">useBearStore</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> state.<span class="property">nuts</span>)</span><br><span class="line"><span class="keyword">const</span> honey = <span class="title function_">useBearStore</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> state.<span class="property">honey</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="异步-Actions"><a href="#异步-Actions" class="headerlink" title="异步 Actions"></a>异步 Actions</h4><p>直接在 action 中使用 async&#x2F;await,Zustand 不关心你的 action 是否异步 :</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> useFishStore = <span class="title function_">create</span>(<span class="function">(<span class="params">set</span>) =&gt;</span> (&#123;</span><br><span class="line">  <span class="attr">fishies</span>: &#123;&#125;,</span><br><span class="line">  <span class="attr">fetch</span>: <span class="title function_">async</span> (pond) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> response = <span class="keyword">await</span> <span class="title function_">fetch</span>(pond)</span><br><span class="line">    <span class="title function_">set</span>(&#123; <span class="attr">fishies</span>: <span class="keyword">await</span> response.<span class="title function_">json</span>() &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;))</span><br></pre></td></tr></table></figure>
+
+<h2 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a><a target="_blank" rel="noopener" href="https://zustand.docs.pmnd.rs/guides/practice-with-no-store-actions#practice-with-no-store-actions">最佳实践</a></h2><p>推荐的做法是将动作和状态放在存储中（让动作与状态位于同一位置）。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useBoundStore = <span class="title function_">create</span>(<span class="function">(<span class="params">set</span>) =&gt;</span> (&#123;</span><br><span class="line">  <span class="attr">count</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">text</span>: <span class="string">&#x27;hello&#x27;</span>,</span><br><span class="line">  <span class="attr">inc</span>: <span class="function">() =&gt;</span> <span class="title function_">set</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> (&#123; <span class="attr">count</span>: state.<span class="property">count</span> + <span class="number">1</span> &#125;)),</span><br><span class="line">  <span class="attr">setText</span>: <span class="function">(<span class="params">text</span>) =&gt;</span> <span class="title function_">set</span>(&#123; text &#125;),</span><br><span class="line">&#125;))</span><br></pre></td></tr></table></figure>
+<p>这将创建一个包含数据和操作的自包含存储。</p>
+<p>另一种方法是在模块级别定义操作，使其位于存储外部。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useBoundStore = <span class="title function_">create</span>(<span class="function">() =&gt;</span> (&#123;</span><br><span class="line">  <span class="attr">count</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">text</span>: <span class="string">&#x27;hello&#x27;</span>,</span><br><span class="line">&#125;))</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">inc</span> = (<span class="params"></span>) =&gt;</span><br><span class="line">  useBoundStore.<span class="title function_">setState</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> (&#123; <span class="attr">count</span>: state.<span class="property">count</span> + <span class="number">1</span> &#125;))</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">setText</span> = (<span class="params">text</span>) =&gt; useBoundStore.<span class="title function_">setState</span>(&#123; text &#125;)</span><br></pre></td></tr></table></figure>
+<p>这具有以下几个优势：</p>
+<p>无需钩子即可调用操作<br>便于代码拆分<br>虽然这种模式没有明显缺点，但有些人可能更倾向于采用同位置放置模式，因为它具有封装特性</p>
+<p>完整示例</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; create &#125; <span class="keyword">from</span> <span class="string">&quot;zustand&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; devtools, persist, subscribeWithSelector &#125; <span class="keyword">from</span> <span class="string">&quot;zustand/middleware&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> initialFoodValue = &#123;</span><br><span class="line">  <span class="attr">fish</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">mouse</span>: <span class="number">0</span>,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useFoodStore = create&lt;<span class="keyword">typeof</span> initialFoodValue&gt;()(</span><br><span class="line">  <span class="title function_">devtools</span>(</span><br><span class="line">    <span class="title function_">subscribeWithSelector</span>(</span><br><span class="line">      <span class="title function_">persist</span>(<span class="function">() =&gt;</span> initialFoodValue, &#123; <span class="attr">name</span>: <span class="string">&quot;food store&quot;</span> &#125;)</span><br><span class="line">    ),</span><br><span class="line">    &#123; <span class="attr">name</span>: <span class="string">&quot;food store&quot;</span> &#125;</span><br><span class="line">  )</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">addOneFish</span> = (<span class="params"></span>) =&gt;</span><br><span class="line">  useFoodStore.<span class="title function_">setState</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> (&#123; <span class="attr">fish</span>: state.<span class="property">fish</span> + <span class="number">1</span> &#125;));</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">removeOneFish</span> = (<span class="params"></span>) =&gt;</span><br><span class="line">  useFoodStore.<span class="title function_">setState</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> (&#123; <span class="attr">fish</span>: state.<span class="property">fish</span> - <span class="number">1</span> &#125;));</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">removeAllFish</span> = (<span class="params"></span>) =&gt; useFoodStore.<span class="title function_">setState</span>(&#123; <span class="attr">fish</span>: <span class="number">0</span> &#125;);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>immer -&gt; devtools -&gt; subscribeWithSelector -&gt; persist 顺序</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">StateCreator</span>, create &#125; <span class="keyword">from</span> <span class="string">&quot;zustand&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; immer &#125; <span class="keyword">from</span> <span class="string">&quot;zustand/middleware/immer&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; createSelectors &#125; <span class="keyword">from</span> <span class="string">&quot;../utils/createSelectors&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; devtools, persist, subscribeWithSelector &#125; <span class="keyword">from</span> <span class="string">&quot;zustand/middleware&quot;</span>;</span><br><span class="line"></span><br><span class="line">type <span class="title class_">TCatStoreState</span> = &#123;</span><br><span class="line">  <span class="attr">cats</span>: &#123;</span><br><span class="line">    <span class="attr">bigCats</span>: number;</span><br><span class="line">    <span class="attr">smallCats</span>: number;</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="attr">increaseBigCats</span>: <span class="function">() =&gt;</span> <span class="keyword">void</span>;</span><br><span class="line">  <span class="attr">increaseSmallCats</span>: <span class="function">() =&gt;</span> <span class="keyword">void</span>;</span><br><span class="line">  <span class="attr">summary</span>: <span class="function">() =&gt;</span> <span class="keyword">void</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="attr">createCatSlice</span>: <span class="title class_">StateCreator</span>&lt;</span><br><span class="line">  <span class="title class_">TCatStoreState</span>,</span><br><span class="line">  [</span><br><span class="line">    [<span class="string">&quot;zustand/immer&quot;</span>, never],</span><br><span class="line">    [<span class="string">&quot;zustand/devtools&quot;</span>, unknown],</span><br><span class="line">    [<span class="string">&quot;zustand/subscribeWithSelector&quot;</span>, never],</span><br><span class="line">    [<span class="string">&quot;zustand/persist&quot;</span>, unknown]</span><br><span class="line">  ]</span><br><span class="line">&gt; = <span class="function">(<span class="params">set, get</span>) =&gt;</span> (&#123;</span><br><span class="line">  <span class="attr">cats</span>: &#123;</span><br><span class="line">    <span class="attr">bigCats</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="attr">smallCats</span>: <span class="number">0</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">increaseBigCats</span>: <span class="function">() =&gt;</span></span><br><span class="line">    <span class="title function_">set</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> &#123;</span><br><span class="line">      state.<span class="property">cats</span>.<span class="property">bigCats</span>++;</span><br><span class="line">    &#125;),</span><br><span class="line">  <span class="attr">increaseSmallCats</span>: <span class="function">() =&gt;</span></span><br><span class="line">    <span class="title function_">set</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> &#123;</span><br><span class="line">      state.<span class="property">cats</span>.<span class="property">smallCats</span>++;</span><br><span class="line">    &#125;),</span><br><span class="line">  <span class="attr">summary</span>: <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> total = <span class="title function_">get</span>().<span class="property">cats</span>.<span class="property">bigCats</span> + <span class="title function_">get</span>().<span class="property">cats</span>.<span class="property">smallCats</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">`There are <span class="subst">$&#123;total&#125;</span> cats in total. `</span>;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useCatStore = <span class="title function_">createSelectors</span>(</span><br><span class="line">  create&lt;<span class="title class_">TCatStoreState</span>&gt;()(</span><br><span class="line">    <span class="title function_">immer</span>(</span><br><span class="line">      <span class="title function_">devtools</span>(</span><br><span class="line">        <span class="title function_">subscribeWithSelector</span>(</span><br><span class="line">          <span class="title function_">persist</span>(createCatSlice, &#123;</span><br><span class="line">            <span class="attr">name</span>: <span class="string">&quot;cat store&quot;</span>,</span><br><span class="line">          &#125;)</span><br><span class="line">        ),</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">enabled</span>: <span class="literal">true</span>,</span><br><span class="line">          <span class="attr">name</span>: <span class="string">&quot;cat store&quot;</span>,</span><br><span class="line">        &#125;</span><br><span class="line">      )</span><br><span class="line">    )</span><br><span class="line">  )</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-使用-Slices-模式组织大型-Store"><a href="#1-使用-Slices-模式组织大型-Store" class="headerlink" title="1. 使用 Slices 模式组织大型 Store"></a>1. 使用 Slices 模式组织大型 Store</h3><p>当 store 变得庞大时,可以将其分割成更小的模块:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// fishSlice.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">createFishSlice</span> = (<span class="params">set</span>) =&gt; (&#123;</span><br><span class="line">  <span class="attr">fishes</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">addFish</span>: <span class="function">() =&gt;</span> <span class="title function_">set</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> (&#123; <span class="attr">fishes</span>: state.<span class="property">fishes</span> + <span class="number">1</span> &#125;)),</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// bearSlice.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">createBearSlice</span> = (<span class="params">set</span>) =&gt; (&#123;</span><br><span class="line">  <span class="attr">bears</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">addBear</span>: <span class="function">() =&gt;</span> <span class="title function_">set</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> (&#123; <span class="attr">bears</span>: state.<span class="property">bears</span> + <span class="number">1</span> &#125;)),</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 合并 slices</span></span><br><span class="line"><span class="keyword">import</span> &#123; create &#125; <span class="keyword">from</span> <span class="string">&#x27;zustand&#x27;</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> useBoundStore = <span class="title function_">create</span>(<span class="function">(<span class="params">...a</span>) =&gt;</span> (&#123;</span><br><span class="line">  ...<span class="title function_">createBearSlice</span>(...a),</span><br><span class="line">  ...<span class="title function_">createFishSlice</span>(...a),</span><br><span class="line">&#125;))</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-使用中间件增强功能"><a href="#2-使用中间件增强功能" class="headerlink" title="2. 使用中间件增强功能"></a>2. 使用中间件增强功能</h3><h4 id="Persist-中间件-持久化状态"><a href="#Persist-中间件-持久化状态" class="headerlink" title="Persist 中间件 - 持久化状态"></a>Persist 中间件 - 持久化状态</h4><p>将状态保存到 localStorage 或其他存储引擎:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; create &#125; <span class="keyword">from</span> <span class="string">&#x27;zustand&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; persist, createJSONStorage &#125; <span class="keyword">from</span> <span class="string">&#x27;zustand/middleware&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> useFishStore = <span class="title function_">create</span>(</span><br><span class="line">  <span class="title function_">persist</span>(</span><br><span class="line">    <span class="function">(<span class="params">set, get</span>) =&gt;</span> (&#123;</span><br><span class="line">      <span class="attr">fishes</span>: <span class="number">0</span>,</span><br><span class="line">      <span class="attr">addAFish</span>: <span class="function">() =&gt;</span> <span class="title function_">set</span>(&#123; <span class="attr">fishes</span>: <span class="title function_">get</span>().<span class="property">fishes</span> + <span class="number">1</span> &#125;),</span><br><span class="line">    &#125;),</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">name</span>: <span class="string">&#x27;food-storage&#x27;</span>,</span><br><span class="line">      <span class="attr">storage</span>: <span class="title function_">createJSONStorage</span>(<span class="function">() =&gt;</span> <span class="variable language_">sessionStorage</span>),</span><br><span class="line">    &#125;,</span><br><span class="line">  ),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h4 id="DevTools-中间件-调试"><a href="#DevTools-中间件-调试" class="headerlink" title="DevTools 中间件 - 调试"></a>DevTools 中间件 - 调试</h4><p>使用 Redux DevTools 调试状态变化:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; devtools &#125; <span class="keyword">from</span> <span class="string">&#x27;zustand/middleware&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> usePlainStore = <span class="title function_">create</span>(<span class="title function_">devtools</span>(<span class="function">(<span class="params">set</span>) =&gt;</span> (&#123;</span><br><span class="line">  <span class="comment">// your store</span></span><br><span class="line">&#125;)))</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-TypeScript-使用"><a href="#3-TypeScript-使用" class="headerlink" title="3. TypeScript 使用"></a>3. TypeScript 使用</h3><p>使用 TypeScript 时,需要使用 <code>create&lt;State&gt;()()</code> 的双括号语法 :</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">BearState</span> &#123;</span><br><span class="line">  <span class="attr">bears</span>: <span class="built_in">number</span></span><br><span class="line">  <span class="attr">increase</span>: <span class="function">(<span class="params"><span class="attr">by</span>: <span class="built_in">number</span></span>) =&gt;</span> <span class="built_in">void</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> useBearStore = create&lt;<span class="title class_">BearState</span>&gt;()(</span><br><span class="line">  <span class="title function_">devtools</span>(</span><br><span class="line">    <span class="title function_">persist</span>(</span><br><span class="line">      <span class="function">(<span class="params">set</span>) =&gt;</span> (&#123;</span><br><span class="line">        <span class="attr">bears</span>: <span class="number">0</span>,</span><br><span class="line">        <span class="attr">increase</span>: <span class="function">(<span class="params">by</span>) =&gt;</span> <span class="title function_">set</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> (&#123; <span class="attr">bears</span>: state.<span class="property">bears</span> + by &#125;)),</span><br><span class="line">      &#125;),</span><br><span class="line">      &#123; <span class="attr">name</span>: <span class="string">&#x27;bear-storage&#x27;</span> &#125;,</span><br><span class="line">    ),</span><br><span class="line">  ),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-React-Context-集成"><a href="#4-React-Context-集成" class="headerlink" title="4. React Context 集成"></a>4. React Context 集成</h3><p>对于需要依赖注入或使用组件 props 初始化 store 的场景,推荐使用 vanilla store 配合 React Context:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createContext, useContext &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; createStore, useStore &#125; <span class="keyword">from</span> <span class="string">&#x27;zustand&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> store = <span class="title function_">createStore</span>(...)</span><br><span class="line"><span class="keyword">const</span> <span class="title class_">StoreContext</span> = <span class="title function_">createContext</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">App</span> = (<span class="params"></span>) =&gt; (</span><br><span class="line">  <span class="language-xml"><span class="tag">&lt;<span class="name">StoreContext.Provider</span> <span class="attr">value</span>=<span class="string">&#123;store&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    ...</span></span><br><span class="line"><span class="language-xml">  <span class="tag">&lt;/<span class="name">StoreContext.Provider</span>&gt;</span></span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Component</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> store = <span class="title function_">useContext</span>(<span class="title class_">StoreContext</span>)</span><br><span class="line">  <span class="keyword">const</span> slice = <span class="title function_">useStore</span>(store, selector)</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-单一-Store-架构"><a href="#5-单一-Store-架构" class="headerlink" title="5. 单一 Store 架构"></a>5. 单一 Store 架构</h3><p>推荐使用单一 store 架构,将全局状态集中在一个 store 中 。对于大型应用,使用 slices 模式来实现模块化<cite/>。</p>
+<h3 id="6-性能优化"><a href="#6-性能优化" class="headerlink" title="6. 性能优化"></a>6. 性能优化</h3><ul>
+<li>使用 <code>useShallow</code> 进行浅比较,避免不必要的重渲染</li>
+<li>使用精确的 selector 只订阅需要的状态<cite/></li>
+<li>对于频繁变化的状态,考虑使用 <code>subscribeWithSelector</code> 中间件</li>
+</ul>
+<h2 id="Notes"><a href="#Notes" class="headerlink" title="Notes"></a>Notes</h2><p>Zustand 相比 Redux 的优势包括:更少的样板代码、不需要 Context Provider、基于 hooks 的 API、支持瞬态更新(不触发渲染)。相比 React Context,它提供了更少的样板代码、只在变化时渲染组件、集中式的基于 action 的状态管理。</p>
+<p>更多详细文档可以访问<a target="_blank" rel="noopener" href="https://zustand.docs.pmnd.rs/">官方文档</a>。</p>
+<p>Wiki pages you might want to explore:</p>
+<ul>
+<li><a href="/wiki/pmndrs/zustand#1">Introduction to Zustand (pmndrs&#x2F;zustand)</a></li>
+<li><a href="/wiki/pmndrs/zustand#6.2">React Context Integration (pmndrs&#x2F;zustand)</a></li>
+<li><a href="/wiki/pmndrs/zustand#7">Advanced Patterns (pmndrs&#x2F;zustand)</a></li>
+</ul>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about">关于</a></li>
+         
+          <li><a href="/archives">归档</a></li>
+         
+          <li><a href="/tags">标签</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Zustand-%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E"><span class="toc-number">1.</span> <span class="toc-text">Zustand 使用说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-Zustand"><span class="toc-number">1.1.</span> <span class="toc-text">什么是 Zustand</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-number">1.2.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8"><span class="toc-number">1.3.</span> <span class="toc-text">基础使用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E5%88%9B%E5%BB%BA-Store"><span class="toc-number">1.3.1.</span> <span class="toc-text">1. 创建 Store</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E5%9C%A8%E7%BB%84%E4%BB%B6%E4%B8%AD%E4%BD%BF%E7%94%A8"><span class="toc-number">1.3.2.</span> <span class="toc-text">2. 在组件中使用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="toc-number">1.4.</span> <span class="toc-text">核心概念</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E7%8A%B6%E6%80%81%E5%88%87%E7%89%87"><span class="toc-number">1.4.1.</span> <span class="toc-text">选择状态切片</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5-Actions"><span class="toc-number">1.4.2.</span> <span class="toc-text">异步 Actions</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="toc-number">2.</span> <span class="toc-text">最佳实践</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%BD%BF%E7%94%A8-Slices-%E6%A8%A1%E5%BC%8F%E7%BB%84%E7%BB%87%E5%A4%A7%E5%9E%8B-Store"><span class="toc-number">2.1.</span> <span class="toc-text">1. 使用 Slices 模式组织大型 Store</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%BD%BF%E7%94%A8%E4%B8%AD%E9%97%B4%E4%BB%B6%E5%A2%9E%E5%BC%BA%E5%8A%9F%E8%83%BD"><span class="toc-number">2.2.</span> <span class="toc-text">2. 使用中间件增强功能</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Persist-%E4%B8%AD%E9%97%B4%E4%BB%B6-%E6%8C%81%E4%B9%85%E5%8C%96%E7%8A%B6%E6%80%81"><span class="toc-number">2.2.1.</span> <span class="toc-text">Persist 中间件 - 持久化状态</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DevTools-%E4%B8%AD%E9%97%B4%E4%BB%B6-%E8%B0%83%E8%AF%95"><span class="toc-number">2.2.2.</span> <span class="toc-text">DevTools 中间件 - 调试</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-TypeScript-%E4%BD%BF%E7%94%A8"><span class="toc-number">2.3.</span> <span class="toc-text">3. TypeScript 使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-React-Context-%E9%9B%86%E6%88%90"><span class="toc-number">2.4.</span> <span class="toc-text">4. React Context 集成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%8D%95%E4%B8%80-Store-%E6%9E%B6%E6%9E%84"><span class="toc-number">2.5.</span> <span class="toc-text">5. 单一 Store 架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">2.6.</span> <span class="toc-text">6. 性能优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Notes"><span class="toc-number">3.</span> <span class="toc-text">Notes</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/Zustand.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/Zustand.html&text=Zustand"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/Zustand.html&title=Zustand"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/Zustand.html&is_video=false&description=Zustand"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Zustand&body=Check out this article: http://effort.fun/post/Zustand.html"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/Zustand.html&title=Zustand"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/Zustand.html&title=Zustand"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/Zustand.html&title=Zustand"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/Zustand.html&title=Zustand"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/Zustand.html&name=Zustand&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/Zustand.html&t=Zustand"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    EFFORT
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'effort-fun';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+<!-- utterances Comments -->
+
+</body>
+</html>

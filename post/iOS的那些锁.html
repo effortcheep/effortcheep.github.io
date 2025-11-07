@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="互斥锁  在线程获取锁但没有获取到时，线程会进入休眠状态，等锁被释放时线程会被唤醒  防止两个线程同时对用一个公共资源进行读写的机制。当获取锁操作失败时，线程会进入睡眠，等待锁释放时被唤醒 互斥锁又分为 递归锁 可重入锁，同一个线程在锁释放前可再次获取锁，即可递归调用 非递归锁 不可重入，必须等锁释放后才能再次获取锁  自旋锁  自旋锁的线程会一直处于等待状态(忙等待)不会进入休眠 效率高 自旋锁">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS的那些锁">
+<meta property="og:url" content="http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html">
+<meta property="og:site_name" content="EFFORT × Blog">
+<meta property="og:description" content="互斥锁  在线程获取锁但没有获取到时，线程会进入休眠状态，等锁被释放时线程会被唤醒  防止两个线程同时对用一个公共资源进行读写的机制。当获取锁操作失败时，线程会进入睡眠，等待锁释放时被唤醒 互斥锁又分为 递归锁 可重入锁，同一个线程在锁释放前可再次获取锁，即可递归调用 非递归锁 不可重入，必须等锁释放后才能再次获取锁  自旋锁  自旋锁的线程会一直处于等待状态(忙等待)不会进入休眠 效率高 自旋锁">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-05-26T23:21:00.000Z">
+<meta property="article:modified_time" content="2025-11-07T00:50:08.000Z">
+<meta property="article:author" content="EFFORT">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="LOCK">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>iOS的那些锁</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <script>localStorage.getItem("dark_mode")==="dark"&&document.write(`<link rel="stylesheet" href="${location.origin}/css/dark.css">`)</script
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="EFFORT × Blog" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/post/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BB%84.html"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/post/%E5%A4%9A%E7%BA%BF%E7%A8%8B.html"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&text=iOS的那些锁"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&title=iOS的那些锁"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&is_video=false&description=iOS的那些锁"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=iOS的那些锁&body=Check out this article: http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&title=iOS的那些锁"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&title=iOS的那些锁"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&title=iOS的那些锁"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&title=iOS的那些锁"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&name=iOS的那些锁&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&t=iOS的那些锁"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%92%E6%96%A5%E9%94%81"><span class="toc-number">1.</span> <span class="toc-text">互斥锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%92%E6%96%A5%E9%94%81%E5%8F%88%E5%88%86%E4%B8%BA"><span class="toc-number">2.</span> <span class="toc-text">互斥锁又分为</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%97%8B%E9%94%81"><span class="toc-number">3.</span> <span class="toc-text">自旋锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%97%8B%E9%94%81-1"><span class="toc-number">4.</span> <span class="toc-text">自旋锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%97%8B%E9%94%81-2"><span class="toc-number">5.</span> <span class="toc-text">自旋锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%92%E6%96%A5%E9%94%81-1"><span class="toc-number">6.</span> <span class="toc-text">互斥锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        iOS的那些锁
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">EFFORT</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2020-05-26T23:21:00.000Z" itemprop="datePublished">2020-05-26</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/LOCK/" rel="tag">LOCK</a>, <a class="tag-link-link" href="/tags/iOS/" rel="tag">iOS</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="互斥锁"><a href="#互斥锁" class="headerlink" title="互斥锁"></a>互斥锁</h2><p>  在线程获取锁但没有获取到时，线程会进入休眠状态，等锁被释放时线程会被唤醒<br>  防止两个线程同时对用一个公共资源进行读写的机制。当获取锁操作失败时，线程会进入睡眠，等待锁释放时被唤醒</p>
+<h2 id="互斥锁又分为"><a href="#互斥锁又分为" class="headerlink" title="互斥锁又分为"></a>互斥锁又分为</h2><ul>
+<li>递归锁 可重入锁，同一个线程在锁释放前可再次获取锁，即可递归调用</li>
+<li>非递归锁 不可重入，必须等锁释放后才能再次获取锁</li>
+</ul>
+<h2 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h2><p>  自旋锁的线程会一直处于等待状态(忙等待)不会进入休眠 效率高</p>
+<h2 id="自旋锁-1"><a href="#自旋锁-1" class="headerlink" title="自旋锁"></a>自旋锁</h2><p>线程反复检查锁变量是否可⽤。由于线程在这⼀过程中保持执⾏， 因此是⼀种忙等待。⼀旦获取了⾃旋锁，线程会⼀直保持该锁，直⾄显式释 放⾃旋锁<br>自旋锁避免了进程上下文的调度开心，因此多余线程只会阻塞很短时间的场合是有效的</p>
+<h2 id="自旋锁-2"><a href="#自旋锁-2" class="headerlink" title="自旋锁"></a>自旋锁</h2><ol>
+<li>OSSpinLock</li>
+</ol>
+<ul>
+<li>OSSpinLock 已被废弃<br>   自旋锁之所以不安全，是因为自旋锁由于获取锁时，线程一直处于忙等待状态，造成了任务的优先级反转，而OSSpinLock忙等待的实际就可能造成高优先级一直running等待，占用CPU时间片，而低优先级任务无法抢占时间片，变成迟迟完不成，不释放锁的情况。</li>
+</ul>
+<ol start="2">
+<li>automic</li>
+</ol>
+<ul>
+<li>只能保证setter、getter方法的线程安全，并不能保证数据安全</li>
+</ul>
+<ol start="3">
+<li>读写锁</li>
+</ol>
+<ul>
+<li>读写锁实际是一种特殊的自旋锁，他把对共享资源的访问者划分成读者和写者，读者只对共享资源进行访问，写者则需要对共享资源进行写操作。这种锁相对于自旋锁而言，能提高并发性，因为在多处理器系统中，它允许同时有多个读者来访问共享资源，最大可能的读者数为实际的CPU数<ul>
+<li>写者是排他性的，一个读写锁同时只能有一个写者或者多个读者(与CPU数相关)，但不能同时既有读者又有写者。在读写锁保持器件也是抢占时效的</li>
+<li>如果读写锁当前没有读者，也没有写者，那么写者可以立即获得写锁，否则它必须自旋在那里，直到没有任何写者或者读者。如果读写锁没有写者，那么读者可以立即获得该读写锁，否则读者必须自旋在那里，直到写者释放该读写锁</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;pthread.h&gt;</span><br><span class="line">// 全局声明读写锁</span><br><span class="line">pthread_rwlock_t lock;</span><br><span class="line">// 初始化读写锁</span><br><span class="line">pthread_rwlock_init(&amp;lock, NULL);</span><br><span class="line">// 读操作-加锁</span><br><span class="line">pthread_rwlock_rdlock(&amp;lock);</span><br><span class="line">// 读操作-尝试加锁</span><br><span class="line">pthread_rwlock_tryrdlock(&amp;lock);</span><br><span class="line">// 写操作-加锁</span><br><span class="line">pthread_rwlock_wrlock(&amp;lock);</span><br><span class="line">// 写操作-尝试加锁</span><br><span class="line">pthread_rwlock_trywrlock(&amp;lock);</span><br><span class="line">// 解锁</span><br><span class="line">pthread_rwlock_unlock(&amp;lock);</span><br><span class="line">// 释放锁</span><br><span class="line">pthread_rwlock_destroy(&amp;lock);</span><br></pre></td></tr></table></figure>
+<p>平时很少直接使用读写锁pthread_rwlock_t，更多的是采用其他方式，例如使用栅栏函数完成读写锁的需求</p>
+<h2 id="互斥锁-1"><a href="#互斥锁-1" class="headerlink" title="互斥锁"></a>互斥锁</h2><ol>
+<li>pthread_mutex</li>
+</ol>
+<ul>
+<li>pthread_mutex就是互斥锁本身 — 当锁被占用，而其他线程申请锁时，不是使用忙等，而是阻塞线程并睡眠<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;pthread.h&gt;</span><br><span class="line">// 全局声明互斥锁</span><br><span class="line">pthread_mutex_t _lock;</span><br><span class="line">// 初始化互斥锁</span><br><span class="line">pthread_mutex_init(&amp;_lock, NULL);</span><br><span class="line">// 加锁</span><br><span class="line">pthread_mutex_lock(&amp;_lock);</span><br><span class="line">// 做需要线程安全操作</span><br><span class="line">// ...</span><br><span class="line">// 解锁</span><br><span class="line">pthread_mutex_unlock(&amp;_lock);</span><br><span class="line">// 释放锁</span><br><span class="line">pthread_mutex_destroy(&amp;_lock);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="2">
+<li>@synchronized</li>
+</ol>
+<ul>
+<li>递归锁</li>
+<li>@synchronized 可能是日常开发中用的比较多的一种互斥锁，但并不是在任意场景下都能使用@synchronized，且它的性能较低</li>
+<li>性能低是因为的层增删改查消耗了大量新能</li>
+<li>底层维护一个<code>SyncData</code>哈希链表<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">SyncData</span> &#123;</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">SyncData</span>* <span class="title">nextData</span>;</span>   <span class="comment">// 指向下一个</span></span><br><span class="line">		DisguisedPtr&lt;objc_object&gt; object;</span><br><span class="line">		<span class="type">int32_t</span> threadCount;  <span class="comment">// number of THREADS using this block</span></span><br><span class="line">		<span class="type">recursive_mutex_t</span> mutex;</span><br><span class="line">&#125; SyncData;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">// Begin synchronizing on &#x27;obj&#x27;.</span><br><span class="line">// Allocates recursive mutex associated with &#x27;obj&#x27; if needed.</span><br><span class="line">// Returns OBJC_SYNC_SUCCESS once lock is acquired.</span><br><span class="line">int objc_sync_enter(id obj)</span><br><span class="line">&#123;</span><br><span class="line">		int result = OBJC_SYNC_SUCCESS;</span><br><span class="line"></span><br><span class="line">		if (obj) &#123;</span><br><span class="line">				SyncData* data = id2data(obj, ACQUIRE);</span><br><span class="line">				assert(data);</span><br><span class="line">				data-&gt;mutex.lock();</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">				// @synchronized(nil) does nothing</span><br><span class="line">				if (DebugNilSync) &#123;</span><br><span class="line">						_objc_inform(&quot;NIL SYNC DEBUG: @synchronized(nil); set a breakpoint on objc_sync_nil to debug&quot;);</span><br><span class="line">				&#125;</span><br><span class="line">				objc_sync_nil();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		return result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// End synchronizing on &#x27;obj&#x27;.</span><br><span class="line">// Returns OBJC_SYNC_SUCCESS or OBJC_SYNC_NOT_OWNING_THREAD_ERROR</span><br><span class="line">int objc_sync_exit(id obj)</span><br><span class="line">&#123;</span><br><span class="line">		int result = OBJC_SYNC_SUCCESS;</span><br><span class="line"></span><br><span class="line">		if (obj) &#123;</span><br><span class="line">				SyncData* data = id2data(obj, RELEASE);</span><br><span class="line">				if (!data) &#123;</span><br><span class="line">						result = OBJC_SYNC_NOT_OWNING_THREAD_ERROR;</span><br><span class="line">				&#125; else &#123;</span><br><span class="line">						bool okay = data-&gt;mutex.tryUnlock();</span><br><span class="line">						if (!okay) &#123;</span><br><span class="line">								result = OBJC_SYNC_NOT_OWNING_THREAD_ERROR;</span><br><span class="line">						&#125;</span><br><span class="line">				&#125;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">				// @synchronized(nil) does nothing</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>NSLock</li>
+</ol>
+<ul>
+<li><p>NSLokc是对互斥锁(pthread_mutex)的简单封装</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (void)test &#123;</span><br><span class="line">    self.testArray = [NSMutableArray array];</span><br><span class="line">    NSLock *lock = [[NSLock alloc] ini];</span><br><span class="line">    for (int i = 0; i &lt; 20000; i++) &#123;</span><br><span class="line">        dispatch_async(dispatch_get_global_queue(0, 0), ^&#123;</span><br><span class="line">            [lock lock];</span><br><span class="line">            self.testArray = [NSMutableArray array];</span><br><span class="line">            [lock unlock];</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>注意事项<br> 使用互斥锁NSLock异步并发调用block快，block快内部递归调用自己</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">- (void)test &#123;</span><br><span class="line">    NSLock *lock = [[NSLock alloc] init];</span><br><span class="line">    dispatch_async(dispatch_get_global_queue(0, 0), ^&#123;</span><br><span class="line">        static void (^block)(int);</span><br><span class="line"></span><br><span class="line">        block = ^(int value) &#123;</span><br><span class="line">            NSLog(@&quot;加锁前&quot;);</span><br><span class="line">            [lock lock];</span><br><span class="line">            NSLog(@&quot;加锁后&quot;);</span><br><span class="line">            if (value &gt; 0) &#123;</span><br><span class="line">                NSLog(@&quot;value--%d&quot;, value);</span><br><span class="line">                block(value - 1);</span><br><span class="line">            &#125;</span><br><span class="line">            [lock unlock];</span><br><span class="line">        &#125;;</span><br><span class="line">        block(10);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line">// 加锁前 -&gt; 加锁后 -&gt; value--10 -&gt; 加锁前</span><br></pre></td></tr></table></figure>
+<p> 原因：互斥锁在递归调用是会造成堵塞，并非死锁</p>
+<ul>
+<li>第一次加锁之后还没有出锁就进行递归调用</li>
+<li>第二次加锁就堵塞了线程</li>
+</ul>
+<p> 解决方案：使用递归锁 NSRecursiveLock 替换 NSLock</p>
+</li>
+</ul>
+<ol start="4">
+<li>NSRecursiveLock</li>
+</ol>
+<ul>
+<li>NSRecursiveLock使用和NSLock类似 使用 NSRecursiveLock 可以解决上面问题<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">- (void)test &#123;</span><br><span class="line">    NSRecursiveLock *lock = [[NSRecursiveLock alloc] init];</span><br><span class="line">    dispatch_async(dispatch_get_global_queue(0, 0), ^&#123;</span><br><span class="line">        static void (^block)(int);</span><br><span class="line"></span><br><span class="line">        block = ^(int value) &#123;</span><br><span class="line">            NSLog(@&quot;加锁前&quot;);</span><br><span class="line">            [lock lock];</span><br><span class="line">            NSLog(@&quot;加锁后&quot;);</span><br><span class="line">            if (value &gt; 0) &#123;</span><br><span class="line">                NSLog(@&quot;value--%d&quot;, value);</span><br><span class="line">                block(value - 1);</span><br><span class="line">            &#125;</span><br><span class="line">            [lock unlock];</span><br><span class="line">        &#125;;</span><br><span class="line">        block(10);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line">// 加锁前 -&gt; 加锁后 -&gt; value--10 -&gt; 加锁前 -&gt; 加锁后 -&gt; value--9 -&gt; 加锁前 -&gt; 加锁后 -&gt; ...</span><br></pre></td></tr></table></figure></li>
+<li>注意事项<br> 递归锁在使用时需要注意思索问题 – 前后代码互相等待便会产生思索</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">- (void)test &#123;</span><br><span class="line">    NSRecursiveLock *lock = [[NSRecursiveLock alloc] init];</span><br><span class="line">    for (int i = 0; i &lt; 10; i++) &#123;</span><br><span class="line">        dispatch_async(dispatch_get_global_queue(0, 0), ^&#123;</span><br><span class="line">            static void (^block)(int);</span><br><span class="line"></span><br><span class="line">            block = ^(int value) &#123;</span><br><span class="line">                NSLog(@&quot;加锁前&quot;);</span><br><span class="line">                [lock lock];</span><br><span class="line">                NSLog(@&quot;加锁后&quot;);</span><br><span class="line">                if (value &gt; 0) &#123;</span><br><span class="line">                    NSLog(@&quot;value--%d&quot;, value);</span><br><span class="line">                    block(value - 1);</span><br><span class="line">                &#125;</span><br><span class="line">                [lock unlock];</span><br><span class="line">            &#125;;</span><br><span class="line">            block(10);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  <code>Crash</code>提示野指针错误<br>   原因：for 循环在block内部对同一个对象进行了多次锁操作，知道这个资源上挂着N把锁，最后大家都无法一次性解锁—找不到解锁的出口<br>        即 线程1中加锁1、同时线程2中加锁2 -&gt; 解锁1等待解锁2 -&gt; 解锁2等待解锁1 -&gt; 无法结束解锁 – 形成思索</p>
+<p>   解决：可以采用使用缓存的@synchronized，因为他对对象进行锁操作，会先从缓存查找是否有所syncData存在。如果有，直接返回而不加锁，保证所锁的唯一性</p>
+<ol start="5">
+<li>dispatch_semaphore_t</li>
+</ol>
+<ul>
+<li><p>信号量</p>
+</li>
+<li><p>dispatch_semaphore_create() 创建信号量</p>
+</li>
+<li><p>dispatch_semaphore_wait() 等待信号量，信号量减1。 当信号量 &lt; 0 时会阻塞当前线程，根据传入的等待时间决定接下来的操作–如果永久等地啊将等到信号(signal) 才执行下去</p>
+</li>
+<li><p>dispatch_semaphore_signal() 释放信号量，信号量加1。 当信号量 &gt;&#x3D; 0 会执行 wait 之后的代码</p>
+<p> 要求按顺序执行</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">- (void)test &#123;</span><br><span class="line">    dispatch_queue_t queue = dispatch_queue_create(&quot;Felix&quot;, DISPATCH_QUEUE_CONCURRENT);</span><br><span class="line"></span><br><span class="line">    for (int i = 0; i &lt; 10; i++) &#123;</span><br><span class="line">        dispatch_async(queue, ^ &#123;</span><br><span class="line">            NSLog(&quot;当前%d----线程%@&quot;, i, [NSThread currentThread]);</span><br><span class="line">        &#125;);</span><br><span class="line">        // 使用栅栏函数</span><br><span class="line">        // dispatch_barrier_async(queue, ^&#123;&#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)dispatch_semaphore_test &#123;</span><br><span class="line">    dispatch_semaphore_t sem = dispatch_semaphore_create(0);</span><br><span class="line">    dispatch_queue_t queue = dispatch_queue_create(&quot;Felix&quot;, DISPATCH_QUEUE_CONCURRENT);</span><br><span class="line"></span><br><span class="line">    for (int i = 0; i &lt; 10; i++) &#123;</span><br><span class="line">        dispatch_async(queue, ^ &#123;</span><br><span class="line">            NSLog(&quot;当前%d----线程%@&quot;, i, [NSThread currentThread]);</span><br><span class="line">            // 打印任务结束后信号量解锁</span><br><span class="line">            dispatch_semaphore_signal(sem);</span><br><span class="line">        &#125;);</span><br><span class="line">        // 加锁</span><br><span class="line">        // dispatch_semaphore_wait(sem);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>创建信号量时传入值为1时，可以通过两次才堵塞</li>
+<li>传入值为2时，可以通过三次才堵塞</li>
+</ul>
+<ol start="6">
+<li>NSCondition</li>
+</ol>
+<ul>
+<li>NSCondition 是一个条件锁，线程1需要等到条件1满足才会往下走，否则就会堵塞等待，直至条件满足<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">open</span> <span class="keyword">class</span> <span class="title class_">NSCondition</span>: <span class="title class_ inherited__">NSObject</span>, <span class="title class_ inherited__">NSLocking</span> &#123;</span><br><span class="line">    <span class="keyword">internal</span> <span class="keyword">var</span> mutex <span class="operator">=</span> _MutexPointer.allocate(capacity: <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">internal</span> <span class="keyword">var</span> cond <span class="operator">=</span> _ConditionVariablePointer.allocate(capacity: <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">init</span>() &#123;</span><br><span class="line">        pthread_mutex_init(mutex, <span class="literal">nil</span>)</span><br><span class="line">        pthread_cond_init(cond, <span class="literal">nil</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">deinit</span> &#123;</span><br><span class="line">        pthread_mutex_destroy(mutex)</span><br><span class="line">        pthread_cond_destroy(cond)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">func</span> <span class="title function_">lock</span>() &#123;</span><br><span class="line">        pthread_mutex_lock(mutex)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">func</span> <span class="title function_">unlock</span>() &#123;</span><br><span class="line">        pthread_mutex_unlock(mutex)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">func</span> <span class="title function_">wait</span>() &#123;</span><br><span class="line">        pthread_cond_wait(cond, mutex)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">func</span> <span class="title function_">wait</span>(<span class="params">until</span> <span class="params">limit</span>: <span class="type">Date</span>) -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">var</span> timeout <span class="operator">=</span> timeSpecFrom(date: limit) <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> pthread_cond_timedwait(cond, mutex, <span class="operator">&amp;</span>timeout) <span class="operator">==</span> <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">func</span> <span class="title function_">signal</span>() &#123;</span><br><span class="line">        pthread_cond_signal(cond)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">func</span> <span class="title function_">broadcast</span>() &#123;</span><br><span class="line">        pthread_cond_broadcast(cond) <span class="comment">// wait  signal</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">var</span> name: <span class="type">String</span>?</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>NSCondition 是对 mutex 和 cond 的一种封装(cond就是用于访问和操作特定类型数据的指针)</li>
+<li>wait 操作会阻塞线程，使其进入休眠状态，直至超时</li>
+<li>signal 操作是唤醒一个正在休眠等待的线程</li>
+<li>broadcast 会唤醒所有正在等待的线程</li>
+</ul>
+</li>
+</ul>
+<ol start="7">
+<li>NSConditionLock</li>
+</ol>
+<ul>
+<li>NSCondition + Lock<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">open</span> <span class="keyword">class</span> <span class="title class_">NSConditionLock</span> : <span class="title class_ inherited__">NSObject</span>, <span class="title class_ inherited__">NSLocking</span> &#123;</span><br><span class="line">    <span class="keyword">internal</span> <span class="keyword">var</span> _cond <span class="operator">=</span> <span class="type">NSCondition</span>()</span><br><span class="line">    <span class="keyword">internal</span> <span class="keyword">var</span> _value: <span class="type">Int</span></span><br><span class="line">    <span class="keyword">internal</span> <span class="keyword">var</span> _thread: _swift_CFThreadRef<span class="operator">?</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">convenience</span> <span class="keyword">override</span> <span class="keyword">init</span>() &#123;</span><br><span class="line">        <span class="keyword">self</span>.<span class="keyword">init</span>(condition: <span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">init</span>(<span class="params">condition</span>: <span class="type">Int</span>) &#123;</span><br><span class="line">        _value <span class="operator">=</span> condition</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">func</span> <span class="title function_">lock</span>() &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="keyword">_</span> <span class="operator">=</span> lock(before: <span class="type">Date</span>.distantFuture)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">func</span> <span class="title function_">unlock</span>() &#123;</span><br><span class="line">        _cond.lock()</span><br><span class="line">        _thread <span class="operator">=</span> <span class="literal">nil</span></span><br><span class="line">        _cond.broadcast()</span><br><span class="line">        _cond.unlock()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">var</span> condition: <span class="type">Int</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> _value</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">func</span> <span class="title function_">lock</span>(<span class="params">whenCondition</span> <span class="params">condition</span>: <span class="type">Int</span>) &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="keyword">_</span> <span class="operator">=</span> lock(whenCondition: condition, before: <span class="type">Date</span>.distantFuture)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">func</span> <span class="title function_">`try`</span>() -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> lock(before: <span class="type">Date</span>.distantPast)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">func</span> <span class="title function_">tryLock</span>(<span class="params">whenCondition</span> <span class="params">condition</span>: <span class="type">Int</span>) -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> lock(whenCondition: condition, before: <span class="type">Date</span>.distantPast)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">func</span> <span class="title function_">unlock</span>(<span class="params">withCondition</span> <span class="params">condition</span>: <span class="type">Int</span>) &#123;</span><br><span class="line">        _cond.lock()</span><br><span class="line">        _thread <span class="operator">=</span> <span class="literal">nil</span></span><br><span class="line">        _value <span class="operator">=</span> condition</span><br><span class="line">        _cond.broadcast()</span><br><span class="line">        _cond.unlock()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">func</span> <span class="title function_">lock</span>(<span class="params">before</span> <span class="params">limit</span>: <span class="type">Date</span>) -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">        _cond.lock()</span><br><span class="line">        <span class="keyword">while</span> _thread <span class="operator">!=</span> <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> <span class="operator">!</span>_cond.wait(until: limit) &#123;</span><br><span class="line">                _cond.unlock()</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        _thread <span class="operator">=</span> pthread_self()</span><br><span class="line">        _cond.unlock()</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">func</span> <span class="title function_">lock</span>(<span class="params">whenCondition</span> <span class="params">condition</span>: <span class="type">Int</span>, <span class="params">before</span> <span class="params">limit</span>: <span class="type">Date</span>) -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">        _cond.lock()</span><br><span class="line">        <span class="keyword">while</span> _thread <span class="operator">!=</span> <span class="literal">nil</span> <span class="operator">||</span> _value <span class="operator">!=</span> condition &#123;</span><br><span class="line">            <span class="keyword">if</span> <span class="operator">!</span>_cond.wait(until: limit) &#123;</span><br><span class="line">                _cond.unlock()</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        _thread <span class="operator">=</span> pthread_self()</span><br><span class="line">        _cond.unlock()</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">open</span> <span class="keyword">var</span> name: <span class="type">String</span>?</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>NSConditionLock 是 NSCondition加线程数的封装</li>
+<li>NSConditionLock 可以设置锁条件，而NSCondition只是无脑的通知信号</li>
+</ul>
+<ol start="8">
+<li>os_unfair_lock</li>
+</ol>
+<ul>
+<li>如果等待锁的线程优先级比较高，它会一直占用着CPU资源，优先级低的线程就无法释放锁</li>
+<li>由于 OSSpinLock自旋锁的BUG，替代方案是内部封装了os_unfair_lock，而os_unfair_lock在加锁是会处于休眠状态，而不是自旋锁的等待状态</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>OSSpinLock不在安全，底层使用os_unfair_lock替代</li>
+<li>atomic只能保证setter、getter时线程安全，所以更多的时候使用nonatiomic修饰</li>
+<li>读写锁更多使用栅栏函数来实现</li>
+<li>@synchronized在底层维护了一个哈希链表进行data的存储，使用recursive_mutex_t进行加锁</li>
+<li>NSLock、NSRecursiveLock、NSCondition和NSConditionLock底层都是对pthread_mutex的封装</li>
+<li>NScondition和NSConditionLock是条件锁，当满足某一个条件时才能执行操作，和信号量dispatch_semaphore类似</li>
+<li>普通场景下涉及到线程安全，可以使用NSLock</li>
+<li>循环调用时用 NSRecuriveLock</li>
+<li>循环调用且有线程影响是，注意死锁，有死锁问题使用@synchronized</li>
+</ul>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about">关于</a></li>
+         
+          <li><a href="/archives">归档</a></li>
+         
+          <li><a href="/tags">标签</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%92%E6%96%A5%E9%94%81"><span class="toc-number">1.</span> <span class="toc-text">互斥锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%92%E6%96%A5%E9%94%81%E5%8F%88%E5%88%86%E4%B8%BA"><span class="toc-number">2.</span> <span class="toc-text">互斥锁又分为</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%97%8B%E9%94%81"><span class="toc-number">3.</span> <span class="toc-text">自旋锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%97%8B%E9%94%81-1"><span class="toc-number">4.</span> <span class="toc-text">自旋锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E6%97%8B%E9%94%81-2"><span class="toc-number">5.</span> <span class="toc-text">自旋锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%92%E6%96%A5%E9%94%81-1"><span class="toc-number">6.</span> <span class="toc-text">互斥锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&text=iOS的那些锁"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&title=iOS的那些锁"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&is_video=false&description=iOS的那些锁"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=iOS的那些锁&body=Check out this article: http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&title=iOS的那些锁"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&title=iOS的那些锁"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&title=iOS的那些锁"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&title=iOS的那些锁"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&name=iOS的那些锁&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/iOS%E7%9A%84%E9%82%A3%E4%BA%9B%E9%94%81.html&t=iOS的那些锁"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    EFFORT
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'effort-fun';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+<!-- utterances Comments -->
+
+</body>
+</html>

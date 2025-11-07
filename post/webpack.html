@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="webpack 性能优化webpack 的优化瓶颈，主要是两个方面  webpack 的构建过程太长 webpack 打包的结果体积太大  构建过程对于构建时间，可以采用 speed-measuer-webpack-plugin 插件进行分析 多线程打包可以使用 happypack 进行多线程打包，设置 js 或者 css 打包过程，使用 happypack 的 loader 进行打包 如果项目比">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webpack">
+<meta property="og:url" content="http://effort.fun/post/webpack.html">
+<meta property="og:site_name" content="EFFORT × Blog">
+<meta property="og:description" content="webpack 性能优化webpack 的优化瓶颈，主要是两个方面  webpack 的构建过程太长 webpack 打包的结果体积太大  构建过程对于构建时间，可以采用 speed-measuer-webpack-plugin 插件进行分析 多线程打包可以使用 happypack 进行多线程打包，设置 js 或者 css 打包过程，使用 happypack 的 loader 进行打包 如果项目比">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-02-23T20:55:35.000Z">
+<meta property="article:modified_time" content="2025-11-07T00:50:08.000Z">
+<meta property="article:author" content="EFFORT">
+<meta property="article:tag" content="webpack">
+<meta property="article:tag" content="build tool">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>webpack</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <script>localStorage.getItem("dark_mode")==="dark"&&document.write(`<link rel="stylesheet" href="${location.origin}/css/dark.css">`)</script
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="EFFORT × Blog" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/post/chrome-performance.html"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/post/tcp.html"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/webpack.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/webpack.html&text=webpack"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/webpack.html&title=webpack"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/webpack.html&is_video=false&description=webpack"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=webpack&body=Check out this article: http://effort.fun/post/webpack.html"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/webpack.html&title=webpack"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/webpack.html&title=webpack"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/webpack.html&title=webpack"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/webpack.html&title=webpack"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/webpack.html&name=webpack&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/webpack.html&t=webpack"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#webpack-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">webpack 性能优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E8%BF%87%E7%A8%8B"><span class="toc-number">1.1.</span> <span class="toc-text">构建过程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%89%93%E5%8C%85"><span class="toc-number">1.1.1.</span> <span class="toc-text">多线程打包</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8E%8B%E7%BC%A9"><span class="toc-number">1.1.2.</span> <span class="toc-text">压缩</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%84%E7%BC%96%E8%AF%91"><span class="toc-number">1.1.3.</span> <span class="toc-text">预编译</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%93%E5%8C%85%E4%BD%93%E7%A7%AF"><span class="toc-number">1.2.</span> <span class="toc-text">打包体积</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        webpack
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">EFFORT</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-02-23T20:55:35.000Z" itemprop="datePublished">2023-02-23</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/build-tool/" rel="tag">build tool</a>, <a class="tag-link-link" href="/tags/webpack/" rel="tag">webpack</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="webpack-性能优化"><a href="#webpack-性能优化" class="headerlink" title="webpack 性能优化"></a>webpack 性能优化</h2><p>webpack 的优化瓶颈，主要是两个方面</p>
+<ul>
+<li>webpack 的构建过程太长</li>
+<li>webpack 打包的结果体积太大</li>
+</ul>
+<h3 id="构建过程"><a href="#构建过程" class="headerlink" title="构建过程"></a>构建过程</h3><p>对于构建时间，可以采用 speed-measuer-webpack-plugin 插件进行分析</p>
+<h4 id="多线程打包"><a href="#多线程打包" class="headerlink" title="多线程打包"></a>多线程打包</h4><p>可以使用 happypack 进行多线程打包，设置 js 或者 css 打包过程，使用 happypack 的 loader 进行打包</p>
+<p>如果项目比较小不建议使用，反而会降低打包速度</p>
+<p>happypack 的基本原理是将打包任务分配到多个子进程中去并行处理，子进程处理完成后会把结果发送到主进程中，从而减少构建时间。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">rules</span>: [</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">test</span>: <span class="regexp">/\.js$/</span>,</span><br><span class="line">    <span class="attr">exclude</span>: <span class="regexp">/node_modules/</span>,</span><br><span class="line">    <span class="attr">include</span>: path.<span class="title function_">resolve</span>(<span class="string">&#x27;src&#x27;</span>),</span><br><span class="line">    <span class="attr">use</span>: <span class="string">&#x27;Happypack/loader?id=js&#x27;</span>  <span class="comment">// 使用 happypack 的 loader 进行打包</span></span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">test</span>: <span class="regexp">/\.css$/</span></span><br><span class="line">  &#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="attr">plugins</span>: [</span><br><span class="line">  <span class="comment">// css</span></span><br><span class="line">  <span class="keyword">new</span> <span class="title class_">Happypack</span>(&#123;</span><br><span class="line">    <span class="attr">id</span>: <span class="string">&#x27;css&#x27;</span></span><br><span class="line">  &#125;),</span><br><span class="line">  <span class="keyword">new</span> <span class="title class_">Happypack</span>(&#123;</span><br><span class="line">    <span class="attr">id</span>: <span class="string">&#x27;js&#x27;</span>,</span><br><span class="line">    <span class="attr">use</span>: [</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">loader</span>: <span class="string">&#x27;babel-loader&#x27;</span>,</span><br><span class="line">        <span class="attr">options</span>: &#123;</span><br><span class="line">          <span class="attr">preset</span>: [</span><br><span class="line">            <span class="string">&#x27;@babel/preset-env&#x27;</span></span><br><span class="line">          ]</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;)</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>使用 tread-load webpack4 之后 官方推出的</p>
+<p>thread-loader 会将您的 loader 放置在一个 worker 池里面运行，以达到多线程构建</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">rules</span>: [</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">test</span>: <span class="regexp">/\.js$/</span>,</span><br><span class="line">    <span class="attr">exclude</span>: <span class="regexp">/node_modules/</span>,</span><br><span class="line">    <span class="attr">include</span>: path.<span class="title function_">resolve</span>(<span class="string">&quot;src&quot;</span>),</span><br><span class="line">    <span class="attr">use</span>: [</span><br><span class="line">      <span class="string">&quot;thread-loader&quot;</span>,</span><br><span class="line">      <span class="comment">// 你的高开销的loader放置在此 (e.g babel-loader)</span></span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<h4 id="压缩"><a href="#压缩" class="headerlink" title="压缩"></a>压缩</h4><p>并行压缩主要有三个方案：</p>
+<ul>
+<li>parallel-uglify-plugi</li>
+<li>uglifyjs-webpack-plugin 开启 parallel 参数</li>
+<li>terser-webpack-plugin 开启 parallel 参数 （推荐使用这个，支持 ES6 语法压缩）</li>
+</ul>
+<h4 id="预编译"><a href="#预编译" class="headerlink" title="预编译"></a>预编译</h4><p>可以使用预编译将提前引入的三方库进新打包处理，而不是每次都进行打包。</p>
+<p>DllPlugin 结合 DllRefrencePlugin 插件的运用，对将要产出的 bundle 文件进行拆解打包，可以很彻底地加快 webpack 的打包速度</p>
+<p>DllPlugin：负责抽离第三方库，形成第三方动态库dll<br>DllReferencePlugin：负责引用第三方库</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/master-yi/p/12592424.html">具体可点击查看</a></p>
+<h3 id="打包体积"><a href="#打包体积" class="headerlink" title="打包体积"></a>打包体积</h3><ul>
+<li><p>Tree-Shaking 删除冗余代码</p>
+</li>
+<li><p>压缩 HTML&#x2F;JS&#x2F;CSS</p>
+<ul>
+<li>HTML压缩： html-webpack-plugin —— 删除双引号和折叠为一行。</li>
+<li>CSS<ul>
+<li>压缩： mini-css-extract-plugin</li>
+<li>去除无用的 css: purgecss-webpack-plugin</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about">关于</a></li>
+         
+          <li><a href="/archives">归档</a></li>
+         
+          <li><a href="/tags">标签</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#webpack-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">webpack 性能优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E8%BF%87%E7%A8%8B"><span class="toc-number">1.1.</span> <span class="toc-text">构建过程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%89%93%E5%8C%85"><span class="toc-number">1.1.1.</span> <span class="toc-text">多线程打包</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8E%8B%E7%BC%A9"><span class="toc-number">1.1.2.</span> <span class="toc-text">压缩</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%84%E7%BC%96%E8%AF%91"><span class="toc-number">1.1.3.</span> <span class="toc-text">预编译</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%93%E5%8C%85%E4%BD%93%E7%A7%AF"><span class="toc-number">1.2.</span> <span class="toc-text">打包体积</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/webpack.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/webpack.html&text=webpack"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/webpack.html&title=webpack"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/webpack.html&is_video=false&description=webpack"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=webpack&body=Check out this article: http://effort.fun/post/webpack.html"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/webpack.html&title=webpack"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/webpack.html&title=webpack"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/webpack.html&title=webpack"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/webpack.html&title=webpack"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/webpack.html&name=webpack&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/webpack.html&t=webpack"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2025
+    EFFORT
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'effort-fun';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+<!-- utterances Comments -->
+
+</body>
+</html>
