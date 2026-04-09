@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="(仓库)[https:&#x2F;&#x2F;github.com&#x2F;patricorgi&#x2F;dotfiles] 快捷键表格核心编辑快捷键   快捷键 功能 描述    jk 退出插入模式 在插入模式下快速退出   j&#x2F;k 智能移动 无计数时按显示行移动，有计数时按实际行移动   &lt;Esc&gt; 清除搜索高亮 取消搜索结果高亮显示   \ 水平分割窗口 创建水平分割   | 垂直分割窗口 创建垂直分割">
+<meta property="og:type" content="article">
+<meta property="og:title" content="neovim-config">
+<meta property="og:url" content="http://effort.fun/post/neovim-config.html">
+<meta property="og:site_name" content="EFFORT × Blog">
+<meta property="og:description" content="(仓库)[https:&#x2F;&#x2F;github.com&#x2F;patricorgi&#x2F;dotfiles] 快捷键表格核心编辑快捷键   快捷键 功能 描述    jk 退出插入模式 在插入模式下快速退出   j&#x2F;k 智能移动 无计数时按显示行移动，有计数时按实际行移动   &lt;Esc&gt; 清除搜索高亮 取消搜索结果高亮显示   \ 水平分割窗口 创建水平分割   | 垂直分割窗口 创建垂直分割">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-03T13:44:20.000Z">
+<meta property="article:modified_time" content="2026-04-09T13:21:29.000Z">
+<meta property="article:author" content="EFFORT">
+<meta property="article:tag" content="nvim config">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>neovim-config</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <script>localStorage.getItem("dark_mode")==="dark"&&document.write(`<link rel="stylesheet" href="${location.origin}/css/dark.css">`)</script
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="EFFORT × Blog" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/post/Zustand.html"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/post/SwiftDate.html"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/neovim-config.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/neovim-config.html&text=neovim-config"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/neovim-config.html&title=neovim-config"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/neovim-config.html&is_video=false&description=neovim-config"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=neovim-config&body=Check out this article: http://effort.fun/post/neovim-config.html"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/neovim-config.html&title=neovim-config"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/neovim-config.html&title=neovim-config"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/neovim-config.html&title=neovim-config"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/neovim-config.html&title=neovim-config"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/neovim-config.html&name=neovim-config&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/neovim-config.html&t=neovim-config"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BF%AB%E6%8D%B7%E9%94%AE%E8%A1%A8%E6%A0%BC"><span class="toc-number">1.</span> <span class="toc-text">快捷键表格</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E7%BC%96%E8%BE%91%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">1.1.</span> <span class="toc-text">核心编辑快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E6%9F%A5%E6%89%BE%E5%92%8C%E5%AF%BC%E8%88%AA-Snacks"><span class="toc-number">1.2.</span> <span class="toc-text">文件查找和导航 (Snacks)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LSP-%E7%9B%B8%E5%85%B3%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">1.3.</span> <span class="toc-text">LSP 相关快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Git-%E6%93%8D%E4%BD%9C%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">1.4.</span> <span class="toc-text">Git 操作快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E7%9B%B8%E5%85%B3%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">1.5.</span> <span class="toc-text">调试相关快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%BB%E5%8A%A1%E7%AE%A1%E7%90%86%E5%BF%AB%E6%8D%B7%E9%94%AE-Overseer"><span class="toc-number">1.6.</span> <span class="toc-text">任务管理快捷键 (Overseer)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E5%85%89%E6%A0%87%E6%93%8D%E4%BD%9C%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">1.7.</span> <span class="toc-text">多光标操作快捷键</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E6%8F%92%E4%BB%B6%E5%8A%9F%E8%83%BD"><span class="toc-number">2.</span> <span class="toc-text">主要插件功能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%8F%92%E4%BB%B6"><span class="toc-number">2.1.</span> <span class="toc-text">核心插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7%E6%8F%92%E4%BB%B6"><span class="toc-number">2.2.</span> <span class="toc-text">开发工具插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UI-%E5%92%8C%E4%B8%BB%E9%A2%98%E6%8F%92%E4%BB%B6"><span class="toc-number">2.3.</span> <span class="toc-text">UI 和主题插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E7%9B%B8%E5%85%B3%E5%BF%AB%E6%8D%B7%E9%94%AE-1"><span class="toc-number">2.4.</span> <span class="toc-text">调试相关快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%BB%E5%8A%A1%E7%AE%A1%E7%90%86%E5%BF%AB%E6%8D%B7%E9%94%AE-Overseer-1"><span class="toc-number">2.5.</span> <span class="toc-text">任务管理快捷键 (Overseer)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E8%B7%B3%E8%BD%AC%E5%BF%AB%E6%8D%B7%E9%94%AE-Flash"><span class="toc-number">2.6.</span> <span class="toc-text">快速跳转快捷键 (Flash)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%86%B2%E5%8C%BA%E7%AE%A1%E7%90%86%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">2.7.</span> <span class="toc-text">缓冲区管理快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A5%E5%85%A8%E7%B3%BB%E7%BB%9F%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">2.8.</span> <span class="toc-text">补全系统快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%B9%E6%AE%8A%E5%8A%9F%E8%83%BD%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">2.9.</span> <span class="toc-text">特殊功能快捷键</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Oil-nvim-%E9%85%8D%E7%BD%AE%E6%A6%82%E8%BF%B0"><span class="toc-number">3.</span> <span class="toc-text">Oil.nvim 配置概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E9%85%8D%E7%BD%AE%E5%86%85%E5%AE%B9"><span class="toc-number">4.</span> <span class="toc-text">主要配置内容</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E8%AE%BE%E7%BD%AE"><span class="toc-number">4.1.</span> <span class="toc-text">基本设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%BF%AB%E6%8D%B7%E9%94%AE%E6%98%A0%E5%B0%84"><span class="toc-number">4.2.</span> <span class="toc-text">自定义快捷键映射</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%A6%E7%BB%86%E8%A7%86%E5%9B%BE%E5%88%87%E6%8D%A2%E5%8A%9F%E8%83%BD"><span class="toc-number">4.3.</span> <span class="toc-text">详细视图切换功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AA%97%E5%8F%A3%E6%A0%8F%E9%85%8D%E7%BD%AE"><span class="toc-number">4.4.</span> <span class="toc-text">窗口栏配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8"><span class="toc-number">5.</span> <span class="toc-text">如何使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lua-custom-plugins-%E7%9B%AE%E5%BD%95%E4%B8%8B%E6%8F%92%E4%BB%B6%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">6.</span> <span class="toc-text">lua&#x2F;custom&#x2F;plugins 目录下插件的自定义快捷键</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Mini-nvim-%E6%8F%92%E4%BB%B6%E5%BF%AB%E6%8D%B7%E9%94%AE-mini-lua"><span class="toc-number">6.1.</span> <span class="toc-text">Mini.nvim 插件快捷键 (mini.lua)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Multicursor-nvim-%E6%8F%92%E4%BB%B6%E5%BF%AB%E6%8D%B7%E9%94%AE-multicursor-lua"><span class="toc-number">6.2.</span> <span class="toc-text">Multicursor.nvim 插件快捷键 (multicursor.lua)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Ultimate-autopair-%E6%8F%92%E4%BB%B6%E5%BF%AB%E6%8D%B7%E9%94%AE-autopairs-lua"><span class="toc-number">6.3.</span> <span class="toc-text">Ultimate-autopair 插件快捷键 (autopairs.lua)</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        neovim-config
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">EFFORT</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-08-03T13:44:20.000Z" itemprop="datePublished">2025-08-03</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/nvim-config/" rel="tag">nvim config</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>(仓库)[<a target="_blank" rel="noopener" href="https://github.com/patricorgi/dotfiles]">https://github.com/patricorgi/dotfiles]</a></p>
+<h2 id="快捷键表格"><a href="#快捷键表格" class="headerlink" title="快捷键表格"></a>快捷键表格</h2><h3 id="核心编辑快捷键"><a href="#核心编辑快捷键" class="headerlink" title="核心编辑快捷键"></a>核心编辑快捷键</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>jk</code></td>
+<td>退出插入模式</td>
+<td>在插入模式下快速退出</td>
+</tr>
+<tr>
+<td><code>j</code>&#x2F;<code>k</code></td>
+<td>智能移动</td>
+<td>无计数时按显示行移动，有计数时按实际行移动</td>
+</tr>
+<tr>
+<td><code>&lt;Esc&gt;</code></td>
+<td>清除搜索高亮</td>
+<td>取消搜索结果高亮显示</td>
+</tr>
+<tr>
+<td><code>\</code></td>
+<td>水平分割窗口</td>
+<td>创建水平分割</td>
+</tr>
+<tr>
+<td><code>|</code></td>
+<td>垂直分割窗口</td>
+<td>创建垂直分割</td>
+</tr>
+<tr>
+<td><code>L</code>&#x2F;<code>H</code></td>
+<td>切换缓冲区</td>
+<td>在最近使用的缓冲区间切换</td>
+</tr>
+<tr>
+<td><code>+</code></td>
+<td>最大化窗格</td>
+<td>最大化当前 Neovim 窗格</td>
+</tr>
+<tr>
+<td><code>=</code></td>
+<td>恢复窗格</td>
+<td>恢复所有窗格大小</td>
+</tr>
+</tbody></table>
+<h3 id="文件查找和导航-Snacks"><a href="#文件查找和导航-Snacks" class="headerlink" title="文件查找和导航 (Snacks)"></a>文件查找和导航 (Snacks)</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;leader&gt;ff</code></td>
+<td>智能文件查找</td>
+<td>上下文感知的文件查找器</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;fo</code></td>
+<td>最近文件</td>
+<td>查找最近打开的文件</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;fw</code></td>
+<td>内容搜索</td>
+<td>在文件中搜索内容</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;&lt;leader&gt;</code></td>
+<td>缓冲区切换</td>
+<td>在打开的缓冲区间切换</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;ls</code></td>
+<td>符号查找</td>
+<td>查找当前缓冲区中的符号</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;fd</code></td>
+<td>诊断信息</td>
+<td>查找 LSP 诊断信息</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;fc</code></td>
+<td>配置文件</td>
+<td>查找 Neovim 配置文件</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;fg</code></td>
+<td>仓库选择</td>
+<td>自定义仓库选择器</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;fh</code></td>
+<td>帮助查找</td>
+<td>在帮助文档中查找</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;fk</code></td>
+<td>快捷键查找</td>
+<td>查找已定义的快捷键</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;fm</code></td>
+<td>标记查找</td>
+<td>查找 Vim 标记</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;fn</code></td>
+<td>通知查找</td>
+<td>查找通知历史</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;fs</code></td>
+<td>工作区符号</td>
+<td>查找工作区中的符号</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;fi</code></td>
+<td>图标查找</td>
+<td>查找可用图标</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;fb</code></td>
+<td>行内容查找</td>
+<td>在当前缓冲区中查找行</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;fH</code></td>
+<td>高亮查找</td>
+<td>查找高亮组</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;f/</code></td>
+<td>搜索历史</td>
+<td>查找搜索历史</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;fj</code></td>
+<td>跳转列表</td>
+<td>查找跳转历史</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;ft</code></td>
+<td>TODO 查找</td>
+<td>查找 TODO 注释或 Markdown 任务</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;bc</code></td>
+<td>删除缓冲区</td>
+<td>删除当前缓冲区</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;bC</code></td>
+<td>删除其他缓冲区</td>
+<td>删除除当前外的所有缓冲区</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;n</code></td>
+<td>通知历史</td>
+<td>显示通知历史记录</td>
+</tr>
+</tbody></table>
+<h3 id="LSP-相关快捷键"><a href="#LSP-相关快捷键" class="headerlink" title="LSP 相关快捷键"></a>LSP 相关快捷键</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>gd</code></td>
+<td>跳转定义</td>
+<td>使用 Snacks picker 跳转到定义</td>
+</tr>
+<tr>
+<td><code>gD</code></td>
+<td>分割跳转定义</td>
+<td>在新分割窗口中跳转到定义</td>
+</tr>
+<tr>
+<td><code>gr</code></td>
+<td>查找引用</td>
+<td>查找符号的所有引用</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;la</code></td>
+<td>代码操作</td>
+<td>显示可用的代码操作</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;rn</code></td>
+<td>重命名符号</td>
+<td>重命名当前符号</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;ld</code></td>
+<td>显示诊断</td>
+<td>显示当前行的诊断信息</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;td</code></td>
+<td>切换诊断</td>
+<td>开关诊断信息显示</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;th</code></td>
+<td>切换内联提示</td>
+<td>开关 LSP 内联提示</td>
+</tr>
+</tbody></table>
+<h3 id="Git-操作快捷键"><a href="#Git-操作快捷键" class="headerlink" title="Git 操作快捷键"></a>Git 操作快捷键</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>]c</code>&#x2F;<code>[c</code></td>
+<td>Git 块导航</td>
+<td>跳转到下一个&#x2F;上一个 Git 更改块</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;gs</code></td>
+<td>暂存块</td>
+<td>暂存当前 Git 更改块</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;gr</code></td>
+<td>重置块</td>
+<td>重置当前 Git 更改块</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;gp</code></td>
+<td>预览块</td>
+<td>预览 Git 更改块</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;gd</code></td>
+<td>Git 差异</td>
+<td>显示与索引的差异</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;gb</code></td>
+<td>Git blame</td>
+<td>显示当前行的 Git blame 信息</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;gg</code></td>
+<td>打开 Lazygit</td>
+<td>在当前仓库根目录打开 Lazygit</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;gS</code></td>
+<td>暂存整个缓冲区</td>
+<td>暂存当前文件的所有更改</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;gR</code></td>
+<td>重置整个缓冲区</td>
+<td>重置当前文件的所有更改</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;gD</code></td>
+<td>与上次提交对比</td>
+<td>显示与最后一次提交的差异</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;tb</code></td>
+<td>切换 blame 显示</td>
+<td>开关当前行的 Git blame 信息</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;tD</code></td>
+<td>切换删除预览</td>
+<td>开关删除内容的内联预览</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;tg</code></td>
+<td>切换 Git 标记</td>
+<td>开关 Git 状态标记显示</td>
+</tr>
+</tbody></table>
+<h3 id="调试相关快捷键"><a href="#调试相关快捷键" class="headerlink" title="调试相关快捷键"></a>调试相关快捷键</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;leader&gt;du</code></td>
+<td>切换调试 UI</td>
+<td>开关调试界面</td>
+</tr>
+<tr>
+<td><code>&lt;F1&gt;</code></td>
+<td>切换调试 UI</td>
+<td>同上，功能键版本</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;ds</code></td>
+<td>开始&#x2F;继续调试</td>
+<td>启动或继续调试会话</td>
+</tr>
+</tbody></table>
+<h3 id="任务管理快捷键-Overseer"><a href="#任务管理快捷键-Overseer" class="headerlink" title="任务管理快捷键 (Overseer)"></a>任务管理快捷键 (Overseer)</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;leader&gt;rr</code></td>
+<td>运行模板</td>
+<td>运行 Overseer 任务模板</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;rt</code></td>
+<td>切换任务列表</td>
+<td>开关任务列表显示</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;ra</code></td>
+<td>快速操作</td>
+<td>显示快速操作列表</td>
+</tr>
+</tbody></table>
+<h3 id="多光标操作快捷键"><a href="#多光标操作快捷键" class="headerlink" title="多光标操作快捷键"></a>多光标操作快捷键</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;C-n&gt;</code></td>
+<td>添加光标</td>
+<td>匹配并添加新光标</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;s</code></td>
+<td>跳过光标</td>
+<td>跳过当前匹配</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;A</code></td>
+<td>添加所有匹配</td>
+<td>为所有匹配项添加光标</td>
+</tr>
+<tr>
+<td><code>&lt;C-q&gt;</code></td>
+<td>切换光标</td>
+<td>在当前位置添加&#x2F;移除光标</td>
+</tr>
+</tbody></table>
+<h2 id="主要插件功能"><a href="#主要插件功能" class="headerlink" title="主要插件功能"></a>主要插件功能</h2><h3 id="核心插件"><a href="#核心插件" class="headerlink" title="核心插件"></a>核心插件</h3><table>
+<thead>
+<tr>
+<th>插件</th>
+<th>功能</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>snacks.nvim</strong></td>
+<td>多功能工具集</td>
+<td>文件查找、缓冲区管理、通知系统、仪表板</td>
+</tr>
+<tr>
+<td><strong>blink.cmp</strong></td>
+<td>补全引擎</td>
+<td>提供智能代码补全和文档显示</td>
+</tr>
+<tr>
+<td><strong>gitsigns.nvim</strong></td>
+<td>Git 集成</td>
+<td>Git 状态显示、块操作、blame 信息</td>
+</tr>
+<tr>
+<td><strong>flash.nvim</strong></td>
+<td>快速跳转</td>
+<td>使用 <code>ss</code> 进行快速文本跳转</td>
+</tr>
+<tr>
+<td><strong>multicursor.nvim</strong></td>
+<td>多光标编辑</td>
+<td>支持多光标同时编辑</td>
+</tr>
+</tbody></table>
+<h3 id="开发工具插件"><a href="#开发工具插件" class="headerlink" title="开发工具插件"></a>开发工具插件</h3><table>
+<thead>
+<tr>
+<th>插件</th>
+<th>功能</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>nvim-dap</strong></td>
+<td>调试适配器</td>
+<td>提供调试功能支持</td>
+</tr>
+<tr>
+<td><strong>overseer.nvim</strong></td>
+<td>任务运行器</td>
+<td>管理和运行各种开发任务</td>
+</tr>
+<tr>
+<td><strong>oil.nvim</strong></td>
+<td>文件管理器</td>
+<td>类似缓冲区的文件浏览器</td>
+</tr>
+<tr>
+<td><strong>mini.nvim</strong></td>
+<td>轻量工具集</td>
+<td>包含文件操作、图标、环绕编辑等功能</td>
+</tr>
+</tbody></table>
+<h3 id="UI-和主题插件"><a href="#UI-和主题插件" class="headerlink" title="UI 和主题插件"></a>UI 和主题插件</h3><table>
+<thead>
+<tr>
+<th>插件</th>
+<th>功能</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>catppuccin</strong></td>
+<td>主题配色</td>
+<td>提供 Mocha 配色方案，支持透明背景</td>
+</tr>
+<tr>
+<td><strong>ultimate-autopair</strong></td>
+<td>自动配对</td>
+<td>智能括号、引号配对，支持多种文件类型</td>
+</tr>
+<tr>
+<td><strong>render-markdown</strong></td>
+<td>Markdown 渲染</td>
+<td>增强 Markdown 文件的显示效果</td>
+</tr>
+</tbody></table>
+<h3 id="调试相关快捷键-1"><a href="#调试相关快捷键-1" class="headerlink" title="调试相关快捷键"></a>调试相关快捷键</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;leader&gt;du</code></td>
+<td>切换调试 UI</td>
+<td>开关调试界面</td>
+</tr>
+<tr>
+<td><code>&lt;F1&gt;</code></td>
+<td>切换调试 UI</td>
+<td>同上，功能键版本</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;ds</code></td>
+<td>开始&#x2F;继续调试</td>
+<td>启动或继续调试会话</td>
+</tr>
+</tbody></table>
+<h3 id="任务管理快捷键-Overseer-1"><a href="#任务管理快捷键-Overseer-1" class="headerlink" title="任务管理快捷键 (Overseer)"></a>任务管理快捷键 (Overseer)</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;leader&gt;rr</code></td>
+<td>运行模板</td>
+<td>运行 Overseer 任务模板</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;rt</code></td>
+<td>切换任务列表</td>
+<td>开关任务列表显示</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;ra</code></td>
+<td>快速操作</td>
+<td>显示快速操作列表</td>
+</tr>
+</tbody></table>
+<h3 id="快速跳转快捷键-Flash"><a href="#快速跳转快捷键-Flash" class="headerlink" title="快速跳转快捷键 (Flash)"></a>快速跳转快捷键 (Flash)</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ss</code></td>
+<td>Flash 跳转</td>
+<td>快速跳转到指定位置</td>
+</tr>
+<tr>
+<td><code>SS</code></td>
+<td>Treesitter 搜索</td>
+<td>基于语法树的搜索跳转</td>
+</tr>
+</tbody></table>
+<h3 id="缓冲区管理快捷键"><a href="#缓冲区管理快捷键" class="headerlink" title="缓冲区管理快捷键"></a>缓冲区管理快捷键</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;leader&gt;bc</code></td>
+<td>删除缓冲区</td>
+<td>删除当前缓冲区</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;bC</code></td>
+<td>删除其他缓冲区</td>
+<td>删除除当前外的所有缓冲区</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;n</code></td>
+<td>通知历史</td>
+<td>显示通知历史记录</td>
+</tr>
+</tbody></table>
+<h3 id="补全系统快捷键"><a href="#补全系统快捷键" class="headerlink" title="补全系统快捷键"></a>补全系统快捷键</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;C-u&gt;</code></td>
+<td>文档向上滚动</td>
+<td>在补全文档中向上滚动</td>
+</tr>
+<tr>
+<td><code>&lt;C-d&gt;</code></td>
+<td>文档向下滚动</td>
+<td>在补全文档中向下滚动</td>
+</tr>
+</tbody></table>
+<h3 id="特殊功能快捷键"><a href="#特殊功能快捷键" class="headerlink" title="特殊功能快捷键"></a>特殊功能快捷键</h3><table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;leader&gt;tz</code></td>
+<td>无干扰模式</td>
+<td>连续切换多个显示选项</td>
+</tr>
+<tr>
+<td><code>&lt;space&gt;X</code></td>
+<td>执行 Lua 文件</td>
+<td>运行当前 Lua 文件</td>
+</tr>
+<tr>
+<td><code>&lt;space&gt;x</code></td>
+<td>执行当前行</td>
+<td>运行当前行的 Lua 代码</td>
+</tr>
+<tr>
+<td><code>&lt;CR&gt;</code></td>
+<td>切换折叠</td>
+<td>在折叠行上切换折叠状态</td>
+</tr>
+</tbody></table>
+<h2 id="Oil-nvim-配置概述"><a href="#Oil-nvim-配置概述" class="headerlink" title="Oil.nvim 配置概述"></a>Oil.nvim 配置概述</h2><p>Oil.nvim 是一个文件管理器插件，它将文件浏览器作为一个可编辑的缓冲区来使用。 <a href="#8-0">1</a></p>
+<h2 id="主要配置内容"><a href="#主要配置内容" class="headerlink" title="主要配置内容"></a>主要配置内容</h2><h3 id="基本设置"><a href="#基本设置" class="headerlink" title="基本设置"></a>基本设置</h3><ul>
+<li><code>default_file_explorer = true</code> - 将 Oil 设置为默认文件浏览器，替代 netrw <a href="#8-1">2</a></li>
+</ul>
+<h3 id="自定义快捷键映射"><a href="#自定义快捷键映射" class="headerlink" title="自定义快捷键映射"></a>自定义快捷键映射</h3><p>Oil 重新定义了许多快捷键以提供更直观的文件操作体验：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;C-r&gt;</code></td>
+<td>刷新</td>
+<td>刷新当前目录内容</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;y</code></td>
+<td>复制路径</td>
+<td>复制当前文件&#x2F;目录路径</td>
+</tr>
+<tr>
+<td><code>zh</code></td>
+<td>切换隐藏文件</td>
+<td>显示&#x2F;隐藏以点开头的文件</td>
+</tr>
+<tr>
+<td><code>\</code></td>
+<td>水平分割打开</td>
+<td>在水平分割窗口中打开文件</td>
+</tr>
+<tr>
+<td><code>|</code></td>
+<td>垂直分割打开</td>
+<td>在垂直分割窗口中打开文件</td>
+</tr>
+<tr>
+<td><code>-</code></td>
+<td>关闭 Oil</td>
+<td>关闭文件浏览器</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;e</code></td>
+<td>关闭 Oil</td>
+<td>另一个关闭快捷键</td>
+</tr>
+<tr>
+<td><code>&lt;BS&gt;</code></td>
+<td>返回上级目录</td>
+<td>导航到父目录</td>
+</tr>
+</tbody></table>
+<h3 id="详细视图切换功能"><a href="#详细视图切换功能" class="headerlink" title="详细视图切换功能"></a>详细视图切换功能</h3><p>Oil 包含一个智能的详细视图切换功能，通过 <code>gd</code> 快捷键控制： <a href="#8-3">4</a></p>
+<ul>
+<li><strong>简单视图</strong>：只显示文件图标</li>
+<li><strong>详细视图</strong>：显示图标、权限、大小和修改时间</li>
+</ul>
+<h3 id="窗口栏配置"><a href="#窗口栏配置" class="headerlink" title="窗口栏配置"></a>窗口栏配置</h3><p>Oil 配置了自定义的窗口栏显示当前目录路径： <a href="#8-4">5</a></p>
+<p>这个函数会显示当前目录的相对路径（相对于家目录），如果无法获取目录则显示缓冲区名称。</p>
+<h2 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h2><ol>
+<li><p><strong>打开 Oil</strong>：由于设置为默认文件浏览器，您可以使用 <code>:e .</code> 或 <code>:Oil</code> 命令打开当前目录</p>
+</li>
+<li><p><strong>导航</strong>：</p>
+<ul>
+<li>使用 <code>j/k</code> 上下移动</li>
+<li>按 <code>&lt;CR&gt;</code> 进入目录或打开文件</li>
+<li>使用 <code>&lt;BS&gt;</code> 返回上级目录</li>
+</ul>
+</li>
+<li><p><strong>文件操作</strong>：</p>
+<ul>
+<li>Oil 将目录内容显示为可编辑的缓冲区</li>
+<li>您可以直接编辑文件名来重命名</li>
+<li>删除行来删除文件</li>
+<li>添加新行来创建新文件</li>
+</ul>
+</li>
+<li><p><strong>视图切换</strong>：</p>
+<ul>
+<li>按 <code>gd</code> 在简单视图和详细视图间切换</li>
+<li>按 <code>zh</code> 显示&#x2F;隐藏隐藏文件</li>
+</ul>
+</li>
+</ol>
+<h2 id="lua-custom-plugins-目录下插件的自定义快捷键"><a href="#lua-custom-plugins-目录下插件的自定义快捷键" class="headerlink" title="lua&#x2F;custom&#x2F;plugins 目录下插件的自定义快捷键"></a>lua&#x2F;custom&#x2F;plugins 目录下插件的自定义快捷键</h2><h3 id="Mini-nvim-插件快捷键-mini-lua"><a href="#Mini-nvim-插件快捷键-mini-lua" class="headerlink" title="Mini.nvim 插件快捷键 (mini.lua)"></a>Mini.nvim 插件快捷键 (mini.lua)</h3><p>Mini.nvim 提供了环绕编辑功能的快捷键：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sa</code></td>
+<td>添加环绕</td>
+<td>在普通和可视模式下添加环绕字符</td>
+</tr>
+<tr>
+<td><code>sd</code></td>
+<td>删除环绕</td>
+<td>删除环绕字符</td>
+</tr>
+<tr>
+<td><code>sf</code></td>
+<td>查找环绕（右）</td>
+<td>向右查找环绕字符</td>
+</tr>
+<tr>
+<td><code>sF</code></td>
+<td>查找环绕（左）</td>
+<td>向左查找环绕字符</td>
+</tr>
+<tr>
+<td><code>sh</code></td>
+<td>高亮环绕</td>
+<td>高亮显示环绕字符</td>
+</tr>
+<tr>
+<td><code>sr</code></td>
+<td>替换环绕</td>
+<td>替换环绕字符</td>
+</tr>
+<tr>
+<td><code>sn</code></td>
+<td>更新行数</td>
+<td>更新 <code>n_lines</code> 设置</td>
+</tr>
+</tbody></table>
+<h3 id="Multicursor-nvim-插件快捷键-multicursor-lua"><a href="#Multicursor-nvim-插件快捷键-multicursor-lua" class="headerlink" title="Multicursor.nvim 插件快捷键 (multicursor.lua)"></a>Multicursor.nvim 插件快捷键 (multicursor.lua)</h3><p>多光标编辑插件提供了丰富的光标操作快捷键：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;C-n&gt;</code></td>
+<td>添加匹配光标</td>
+<td>匹配当前词并添加光标</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;s</code></td>
+<td>跳过匹配</td>
+<td>跳过当前匹配项</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;N</code></td>
+<td>向上添加光标</td>
+<td>向上方向添加匹配光标</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;S</code></td>
+<td>向上跳过</td>
+<td>向上方向跳过匹配</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;A</code></td>
+<td>添加所有匹配</td>
+<td>为文档中所有匹配项添加光标</td>
+</tr>
+<tr>
+<td><code>&lt;left&gt;</code>&#x2F;<code>&lt;right&gt;</code></td>
+<td>光标导航</td>
+<td>在多个光标间切换</td>
+</tr>
+<tr>
+<td><code>&lt;c-leftmouse&gt;</code></td>
+<td>鼠标添加光标</td>
+<td>用 Ctrl+左键添加&#x2F;移除光标</td>
+</tr>
+<tr>
+<td><code>&lt;c-q&gt;</code></td>
+<td>切换光标</td>
+<td>在当前位置添加&#x2F;移除光标</td>
+</tr>
+<tr>
+<td><code>&lt;leader&gt;gv</code></td>
+<td>恢复光标</td>
+<td>恢复意外清除的光标</td>
+</tr>
+<tr>
+<td><code>&lt;c-i&gt;</code>&#x2F;<code>&lt;c-o&gt;</code></td>
+<td>跳转列表</td>
+<td>在跳转历史中前进&#x2F;后退</td>
+</tr>
+</tbody></table>
+<h3 id="Ultimate-autopair-插件快捷键-autopairs-lua"><a href="#Ultimate-autopair-插件快捷键-autopairs-lua" class="headerlink" title="Ultimate-autopair 插件快捷键 (autopairs.lua)"></a>Ultimate-autopair 插件快捷键 (autopairs.lua)</h3><p>自动配对插件的快捷键：</p>
+<table>
+<thead>
+<tr>
+<th>快捷键</th>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;C-q&gt;</code></td>
+<td>Tab 跳出</td>
+<td>跳出当前配对字符</td>
+</tr>
+</tbody></table>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about">关于</a></li>
+         
+          <li><a href="/archives">归档</a></li>
+         
+          <li><a href="/tags">标签</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BF%AB%E6%8D%B7%E9%94%AE%E8%A1%A8%E6%A0%BC"><span class="toc-number">1.</span> <span class="toc-text">快捷键表格</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E7%BC%96%E8%BE%91%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">1.1.</span> <span class="toc-text">核心编辑快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E6%9F%A5%E6%89%BE%E5%92%8C%E5%AF%BC%E8%88%AA-Snacks"><span class="toc-number">1.2.</span> <span class="toc-text">文件查找和导航 (Snacks)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LSP-%E7%9B%B8%E5%85%B3%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">1.3.</span> <span class="toc-text">LSP 相关快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Git-%E6%93%8D%E4%BD%9C%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">1.4.</span> <span class="toc-text">Git 操作快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E7%9B%B8%E5%85%B3%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">1.5.</span> <span class="toc-text">调试相关快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%BB%E5%8A%A1%E7%AE%A1%E7%90%86%E5%BF%AB%E6%8D%B7%E9%94%AE-Overseer"><span class="toc-number">1.6.</span> <span class="toc-text">任务管理快捷键 (Overseer)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E5%85%89%E6%A0%87%E6%93%8D%E4%BD%9C%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">1.7.</span> <span class="toc-text">多光标操作快捷键</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E6%8F%92%E4%BB%B6%E5%8A%9F%E8%83%BD"><span class="toc-number">2.</span> <span class="toc-text">主要插件功能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%8F%92%E4%BB%B6"><span class="toc-number">2.1.</span> <span class="toc-text">核心插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7%E6%8F%92%E4%BB%B6"><span class="toc-number">2.2.</span> <span class="toc-text">开发工具插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UI-%E5%92%8C%E4%B8%BB%E9%A2%98%E6%8F%92%E4%BB%B6"><span class="toc-number">2.3.</span> <span class="toc-text">UI 和主题插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E7%9B%B8%E5%85%B3%E5%BF%AB%E6%8D%B7%E9%94%AE-1"><span class="toc-number">2.4.</span> <span class="toc-text">调试相关快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%BB%E5%8A%A1%E7%AE%A1%E7%90%86%E5%BF%AB%E6%8D%B7%E9%94%AE-Overseer-1"><span class="toc-number">2.5.</span> <span class="toc-text">任务管理快捷键 (Overseer)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E8%B7%B3%E8%BD%AC%E5%BF%AB%E6%8D%B7%E9%94%AE-Flash"><span class="toc-number">2.6.</span> <span class="toc-text">快速跳转快捷键 (Flash)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%86%B2%E5%8C%BA%E7%AE%A1%E7%90%86%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">2.7.</span> <span class="toc-text">缓冲区管理快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A5%E5%85%A8%E7%B3%BB%E7%BB%9F%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">2.8.</span> <span class="toc-text">补全系统快捷键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%B9%E6%AE%8A%E5%8A%9F%E8%83%BD%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">2.9.</span> <span class="toc-text">特殊功能快捷键</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Oil-nvim-%E9%85%8D%E7%BD%AE%E6%A6%82%E8%BF%B0"><span class="toc-number">3.</span> <span class="toc-text">Oil.nvim 配置概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E9%85%8D%E7%BD%AE%E5%86%85%E5%AE%B9"><span class="toc-number">4.</span> <span class="toc-text">主要配置内容</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E8%AE%BE%E7%BD%AE"><span class="toc-number">4.1.</span> <span class="toc-text">基本设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%BF%AB%E6%8D%B7%E9%94%AE%E6%98%A0%E5%B0%84"><span class="toc-number">4.2.</span> <span class="toc-text">自定义快捷键映射</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%A6%E7%BB%86%E8%A7%86%E5%9B%BE%E5%88%87%E6%8D%A2%E5%8A%9F%E8%83%BD"><span class="toc-number">4.3.</span> <span class="toc-text">详细视图切换功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AA%97%E5%8F%A3%E6%A0%8F%E9%85%8D%E7%BD%AE"><span class="toc-number">4.4.</span> <span class="toc-text">窗口栏配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8"><span class="toc-number">5.</span> <span class="toc-text">如何使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lua-custom-plugins-%E7%9B%AE%E5%BD%95%E4%B8%8B%E6%8F%92%E4%BB%B6%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">6.</span> <span class="toc-text">lua&#x2F;custom&#x2F;plugins 目录下插件的自定义快捷键</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Mini-nvim-%E6%8F%92%E4%BB%B6%E5%BF%AB%E6%8D%B7%E9%94%AE-mini-lua"><span class="toc-number">6.1.</span> <span class="toc-text">Mini.nvim 插件快捷键 (mini.lua)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Multicursor-nvim-%E6%8F%92%E4%BB%B6%E5%BF%AB%E6%8D%B7%E9%94%AE-multicursor-lua"><span class="toc-number">6.2.</span> <span class="toc-text">Multicursor.nvim 插件快捷键 (multicursor.lua)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Ultimate-autopair-%E6%8F%92%E4%BB%B6%E5%BF%AB%E6%8D%B7%E9%94%AE-autopairs-lua"><span class="toc-number">6.3.</span> <span class="toc-text">Ultimate-autopair 插件快捷键 (autopairs.lua)</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://effort.fun/post/neovim-config.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://effort.fun/post/neovim-config.html&text=neovim-config"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://effort.fun/post/neovim-config.html&title=neovim-config"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://effort.fun/post/neovim-config.html&is_video=false&description=neovim-config"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=neovim-config&body=Check out this article: http://effort.fun/post/neovim-config.html"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://effort.fun/post/neovim-config.html&title=neovim-config"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://effort.fun/post/neovim-config.html&title=neovim-config"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://effort.fun/post/neovim-config.html&title=neovim-config"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://effort.fun/post/neovim-config.html&title=neovim-config"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://effort.fun/post/neovim-config.html&name=neovim-config&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://effort.fun/post/neovim-config.html&t=neovim-config"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2026
+    EFFORT
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags">标签</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'effort-fun';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+<!-- utterances Comments -->
+
+</body>
+</html>
